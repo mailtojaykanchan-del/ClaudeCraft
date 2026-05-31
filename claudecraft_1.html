@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><title>ClaudeCraft</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Courier New',monospace}
+
+/* ── MAIN MENU ─────────────────────────────────── */
+#menu{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+#menu-bg{position:absolute;inset:0;background:linear-gradient(180deg,#1a1a2e 0%,#16213e 40%,#0f3460 100%)}
+#menu-stars{position:absolute;inset:0;overflow:hidden}
+#menu-title{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;margin-bottom:40px}
+#menu-title h1{font-size:52px;font-weight:900;letter-spacing:6px;color:#fff;text-shadow:0 0 30px rgba(93,202,165,0.8),0 4px 0 #1a5c3a,0 6px 0 #0d3d26;margin-bottom:4px}
+#menu-title p{color:rgba(255,255,255,0.45);font-size:13px;letter-spacing:3px}
+.menu-btn{position:relative;z-index:1;width:260px;padding:14px 0;margin:5px 0;font:bold 15px 'Courier New';letter-spacing:2px;color:#fff;border:2px solid rgba(93,202,165,0.5);background:rgba(0,0,0,0.6);border-radius:4px;cursor:pointer;text-align:center;transition:all .15s}
+.menu-btn:hover{background:rgba(93,202,165,0.2);border-color:#5DCAA5;transform:scale(1.03)}
+.menu-btn.primary{background:rgba(93,202,165,0.25);border-color:#5DCAA5}
+#menu-version{position:absolute;bottom:14px;color:rgba(255,255,255,0.25);font-size:11px;z-index:1}
+
+/* ── GAME ──────────────────────────────────────── */
+#game{position:fixed;inset:0;display:none}
+#gc{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* Crosshair */
+#xhair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:5}
+#xhair::before,#xhair::after{content:'';position:absolute;background:rgba(255,255,255,0.85)}
+#xhair::before{width:20px;height:2px;top:-1px;left:-10px}
+#xhair::after{width:2px;height:20px;top:-10px;left:-1px}
+
+/* Top HUD */
+#tophud{position:absolute;top:0;left:0;right:0;padding:8px 14px;display:flex;align-items:center;gap:10px;pointer-events:none;background:linear-gradient(rgba(0,0,0,0.6),transparent)}
+#logo{color:#5DCAA5;font-size:13px;font-weight:bold;letter-spacing:2px}
+#survbadge{background:#c62828;color:#fff;font-size:9px;padding:2px 7px;border-radius:2px;letter-spacing:1px;font-weight:bold}
+#tcoords{margin-left:auto;color:rgba(255,255,255,0.6);font-size:11px;text-align:right;line-height:1.7}
+
+/* Health/hunger */
+#bars{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:none}
+.barrow{display:flex;gap:2px}
+.pip{width:11px;height:11px;border-radius:1px;flex-shrink:0}
+.hp{background:#e53935}.hp.half{background:linear-gradient(90deg,#e53935 50%,#444 50%)}.hp.off{background:#3a1a1a}
+.hg{background:#8d6e63}.hg.off{background:#3a2a1a}
+
+/* Hotbar */
+#hotbar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:2px;background:rgba(0,0,0,0.7);padding:4px;border-radius:5px;border:1.5px solid rgba(255,255,255,0.18);pointer-events:all}
+.hs{width:46px;height:46px;border:2px solid rgba(255,255,255,0.2);border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;gap:1px}
+.hs.sel{border-color:#fff;background:rgba(255,255,255,0.1)}
+.hs-icon{width:26px;height:26px;border-radius:2px;image-rendering:pixelated}
+.hs-label{font-size:8px;color:rgba(255,255,255,0.6)}
+.hs-num{position:absolute;top:2px;left:3px;font-size:9px;color:rgba(255,255,255,0.4)}
+
+/* Controls hint */
+#hint{position:absolute;bottom:80px;left:10px;background:rgba(0,0,0,0.7);color:rgba(255,255,255,0.55);font-size:10px;padding:8px 11px;border-radius:4px;line-height:2;pointer-events:none}
+
+/* Day overlay */
+#dayover{position:absolute;inset:0;pointer-events:none;z-index:2}
+
+/* Chat */
+#chatbtn{position:absolute;top:8px;right:12px;z-index:10;pointer-events:all;background:rgba(0,0,0,0.75);border:1px solid rgba(93,202,165,0.45);color:#5DCAA5;font:bold 11px 'Courier New';padding:5px 10px;border-radius:4px;cursor:pointer;letter-spacing:1px}
+#chatbtn:hover{background:rgba(93,202,165,0.15)}
+#chat{position:absolute;right:0;top:0;bottom:0;width:310px;background:rgba(4,8,4,0.97);border-left:1px solid rgba(93,202,165,0.2);display:flex;flex-direction:column;z-index:15;transform:translateX(100%);transition:transform .22s;pointer-events:all}
+#chat.open{transform:none}
+#chead{padding:10px 14px;border-bottom:1px solid rgba(93,202,165,0.15);display:flex;align-items:center;gap:8px;flex-shrink:0}
+#chead h2{color:#5DCAA5;font-size:12px;letter-spacing:1.5px}
+.cdot{width:7px;height:7px;border-radius:50%;background:#5DCAA5;margin-left:auto}
+#cst{font-size:10px;color:rgba(255,255,255,0.4)}
+#keyzone{padding:6px 12px 8px;border-bottom:1px solid rgba(93,202,165,0.1);flex-shrink:0}
+#keyzone p{font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:4px}
+#keyrow{display:flex;gap:4px}
+#apikey{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(93,202,165,0.2);color:#fff;font:10px 'Courier New';padding:5px 7px;border-radius:3px;outline:none}
+#keysave{background:#1D9E75;border:none;color:#fff;font:10px 'Courier New';padding:5px 9px;border-radius:3px;cursor:pointer}
+#msgs{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:7px;scrollbar-width:thin;scrollbar-color:rgba(93,202,165,0.3) transparent}
+.m{font-size:12px;line-height:1.55;padding:7px 10px;border-radius:4px;max-width:96%;white-space:pre-wrap}
+.m.ai{background:rgba(93,202,165,0.08);color:#cde;border-left:2px solid #5DCAA5;align-self:flex-start}
+.m.me{background:rgba(255,255,255,0.07);color:#fff;align-self:flex-end}
+.m.th{color:rgba(93,202,165,0.5);font-style:italic;font-size:11px;align-self:flex-start}
+.m.er{color:#f77;background:rgba(255,30,30,0.07);border-left:2px solid #f44;align-self:flex-start}
+#inprow{padding:10px 12px;border-top:1px solid rgba(93,202,165,0.15);display:flex;gap:5px;flex-shrink:0}
+#prompt{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(93,202,165,0.25);color:#fff;font:12px 'Courier New';padding:7px 10px;border-radius:4px;resize:none;height:54px;outline:none}
+#prompt:focus{border-color:rgba(93,202,165,0.55)}
+#prompt::placeholder{color:rgba(255,255,255,0.2)}
+#sbtn{background:#1D9E75;border:none;color:#fff;font-size:17px;padding:0 11px;border-radius:4px;cursor:pointer;align-self:stretch}
+#sbtn:hover{background:#5DCAA5}
+#sbtn:disabled{background:#333;cursor:default}
+
+/* ESC / Pause */
+#pause{position:absolute;inset:0;background:rgba(0,0,0,0.55);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:50;gap:10px;pointer-events:all}
+#pause h2{color:#fff;font-size:28px;letter-spacing:3px;margin-bottom:10px}
+
+/* Death */
+#dead{position:absolute;inset:0;background:rgba(100,0,0,0.75);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:60;gap:12px;pointer-events:all}
+#dead h2{color:#fff;font-size:38px;letter-spacing:3px;text-shadow:0 0 20px #f00}
+#dead p{color:rgba(255,255,255,0.7);font-size:14px}
+#dead button{background:#c62828;color:#fff;border:none;font:bold 13px 'Courier New';padding:10px 28px;border-radius:3px;cursor:pointer;letter-spacing:1px}
+#dead button:hover{background:#e53935}
+</style>
+</head>
+<body>
+
+<!-- ══ MAIN MENU ══════════════════════════════════════════════ -->
+<div id="menu">
+  <div id="menu-bg"></div>
+  <canvas id="menu-stars-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+  <div id="menu-title">
+    <h1>⬛ CLAUDECRAFT</h1>
+    <p>SURVIVAL EDITION</p>
+  </div>
+  <button class="menu-btn primary" onclick="startGame()">▶ PLAY SURVIVAL</button>
+  <button class="menu-btn" onclick="startGame(true)">⚡ CREATIVE MODE</button>
+  <button class="menu-btn" onclick="showControls()">⌨ CONTROLS</button>
+  <div id="menu-version">ClaudeCraft v1.0 · Powered by Claude AI</div>
+</div>
+
+<!-- ══ GAME ════════════════════════════════════════════════════ -->
+<div id="game">
+  <canvas id="gc"></canvas>
+  <div id="dayover"></div>
+  <div id="xhair"></div>
+  <div id="tophud">
+    <span id="logo">⬛ CLAUDECRAFT</span>
+    <span id="survbadge">SURVIVAL</span>
+    <div id="tcoords">X:0 Y:0 Z:0<br><span id="daytxt">Day 1</span></div>
+  </div>
+  <div id="bars">
+    <div class="barrow" id="hprow"></div>
+    <div class="barrow" id="hgrow"></div>
+  </div>
+  <div id="hotbar"></div>
+  <div id="hint">WASD — move &nbsp; SPACE — jump<br>Drag mouse — look around<br>Click — break block<br>Right-click — place block<br>Scroll — change block &nbsp; T — Claude AI</div>
+  <button id="chatbtn" onclick="toggleChat()">[T] CLAUDE AI</button>
+  <div id="chat">
+    <div id="chead"><h2>CLAUDE BUILDER</h2><div class="cdot"></div><span id="cst">ready</span></div>
+    <div id="keyzone">
+      <p>Anthropic API key:</p>
+      <div id="keyrow"><input id="apikey" type="password" placeholder="sk-ant-..."><button id="keysave" onclick="saveKey()">Save</button></div>
+    </div>
+    <div id="msgs"></div>
+    <div id="inprow"><textarea id="prompt" placeholder="What to build?&#10;e.g. 'build a castle'"></textarea><button id="sbtn" onclick="doSend()">↑</button></div>
+  </div>
+  <div id="pause">
+    <h2>PAUSED</h2>
+    <button class="menu-btn" onclick="resumeGame()">▶ Resume</button>
+    <button class="menu-btn" onclick="goMenu()">⬛ Main Menu</button>
+  </div>
+  <div id="dead">
+    <h2>YOU DIED</h2>
+    <p id="deathmsg">You perished in the wilderness.</p>
+    <button onclick="respawn()">Respawn</button>
+    <button onclick="goMenu()" style="background:#333;margin-top:4px">Main Menu</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════
+// MENU STARS
+// ══════════════════════════════════════════════════════════════
+(function(){
+  const sc = document.getElementById('menu-stars-canvas');
+  sc.width = window.innerWidth; sc.height = window.innerHeight;
+  const ctx = sc.getContext('2d');
+  const stars = Array.from({length:200},()=>({
+    x:Math.random()*sc.width, y:Math.random()*sc.height,
+    r:Math.random()*1.5+.3, a:Math.random()
+  }));
+  function drawStars(){
+    ctx.clearRect(0,0,sc.width,sc.height);
+    stars.forEach(s=>{
+      s.a += 0.005*(Math.random()-.5);
+      s.a = Math.max(.1,Math.min(1,s.a));
+      ctx.fillStyle=`rgba(255,255,255,${s.a})`;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+  drawStars();
+})();
+
+function showControls(){
+  alert('WASD — Move\nSPACE — Jump\nSHIFT — Sneak\nMouse Drag — Look\nLeft Click — Break Block\nRight Click — Place Block\nScroll — Change Block\nT — Open Claude AI Chat\nESC — Pause');
+}
+
+// ══════════════════════════════════════════════════════════════
+// BLOCK REGISTRY
+// ══════════════════════════════════════════════════════════════
+const BD = {
+  grass:    {t:'#56AB2F',s:'#6D4C41',b:'#5D4037'},
+  dirt:     {t:'#795548',s:'#795548',b:'#795548'},
+  stone:    {t:'#9E9E9E',s:'#9E9E9E',b:'#9E9E9E'},
+  cobble:   {t:'#6e6e6e',s:'#6e6e6e',b:'#6e6e6e'},
+  wood:     {t:'#bcaaa4',s:'#795548',b:'#bcaaa4'},
+  plank:    {t:'#FFCC80',s:'#FFCC80',b:'#FFCC80'},
+  leaves:   {t:'#2E7D32',s:'#388E3C',b:'#2E7D32',tr:1,op:.88},
+  glass:    {t:'#B3E5FC',s:'#B3E5FC',b:'#B3E5FC',tr:1,op:.35},
+  sand:     {t:'#FFF176',s:'#F9A825',b:'#FFF176'},
+  water:    {t:'#1565C0',s:'#1976D2',b:'#1565C0',tr:1,op:.65},
+  lava:     {t:'#FF5722',s:'#BF360C',b:'#FF5722',em:'#FF3D00'},
+  gravel:   {t:'#90A4AE',s:'#90A4AE',b:'#90A4AE'},
+  snow:     {t:'#ECEFF1',s:'#CFD8DC',b:'#ECEFF1'},
+  diamond:  {t:'#00E5FF',s:'#00BCD4',b:'#00E5FF',em:'#004D40'},
+  gold:     {t:'#FFD600',s:'#FFA000',b:'#FFD600',em:'#3E2723'},
+  brick:    {t:'#BF360C',s:'#BF360C',b:'#BF360C'},
+  obsidian: {t:'#1A0533',s:'#1A0533',b:'#1A0533'},
+  glowstone:{t:'#FFE082',s:'#FFD54F',b:'#FFE082',em:'#FFF9C4'},
+  bedrock:  {t:'#263238',s:'#263238',b:'#263238'},
+};
+const HOTBAR = ['grass','dirt','stone','cobble','wood','plank','glass','sand','lava','diamond','brick','glowstone','gold','obsidian','snow'];
+const LABELS = {grass:'Grass',dirt:'Dirt',stone:'Stone',cobble:'Cobble',wood:'Wood',plank:'Plank',glass:'Glass',sand:'Sand',lava:'Lava',diamond:'Diamond',brick:'Brick',glowstone:'Glow',gold:'Gold',obsidian:'Void',snow:'Snow'};
+
+// ══════════════════════════════════════════════════════════════
+// THREE.JS SETUP
+// ══════════════════════════════════════════════════════════════
+const canvas = document.getElementById('gc');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.shadowMap.enabled = true;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87CEEB);
+scene.fog = new THREE.Fog(0x87CEEB, 38, 85);
+
+const cam = new THREE.PerspectiveCamera(70,1,0.05,200);
+
+const ambLight = new THREE.AmbientLight(0xffffff,0.6); scene.add(ambLight);
+const sunLight = new THREE.DirectionalLight(0xFFFDE7,1.1);
+sunLight.position.set(30,70,30); sunLight.castShadow=true;
+sunLight.shadow.mapSize.set(1024,1024);
+sunLight.shadow.camera.near=1; sunLight.shadow.camera.far=150;
+sunLight.shadow.camera.left=-50; sunLight.shadow.camera.right=50;
+sunLight.shadow.camera.top=50; sunLight.shadow.camera.bottom=-50;
+scene.add(sunLight);
+const hemiLight = new THREE.HemisphereLight(0x87CEEB,0x33691E,0.4); scene.add(hemiLight);
+
+function resize(){
+  renderer.setSize(window.innerWidth,window.innerHeight,false);
+  cam.aspect = window.innerWidth/window.innerHeight;
+  cam.updateProjectionMatrix();
+}
+resize(); window.addEventListener('resize',resize);
+
+// ══════════════════════════════════════════════════════════════
+// WORLD
+// ══════════════════════════════════════════════════════════════
+const world=new Map(), meshMap=new Map(), MC={};
+function bk(x,y,z){return x+','+y+','+z}
+function gmat(col,tr,op,em){
+  const k=col+'|'+(tr?op:1)+'|'+(em||'');
+  if(!MC[k]) MC[k]=new THREE.MeshLambertMaterial({
+    color:new THREE.Color(col), transparent:!!tr, opacity:op??1,
+    emissive:em?new THREE.Color(em):new THREE.Color(0),
+    side:tr?THREE.DoubleSide:THREE.FrontSide
+  });
+  return MC[k];
+}
+function placeBlock(x,y,z,type){
+  x=Math.round(x);y=Math.round(y);z=Math.round(z);
+  const k=bk(x,y,z);
+  if(meshMap.has(k)){scene.remove(meshMap.get(k));meshMap.delete(k);}
+  if(!type||type==='air'||!BD[type]){world.delete(k);return;}
+  world.set(k,type);
+  const d=BD[type];
+  const g=new THREE.BoxGeometry(1,1,1);
+  const m=new THREE.Mesh(g,[
+    gmat(d.s,d.tr,d.op,d.em),gmat(d.s,d.tr,d.op,d.em),
+    gmat(d.t,d.tr,d.op,d.em),gmat(d.b,d.tr,d.op,d.em),
+    gmat(d.s,d.tr,d.op,d.em),gmat(d.s,d.tr,d.op,d.em)
+  ]);
+  m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true;
+  m.userData={type,x,y,z}; scene.add(m); meshMap.set(k,m);
+}
+function removeBlock(x,y,z){
+  x=Math.round(x);y=Math.round(y);z=Math.round(z);
+  const k=bk(x,y,z);
+  if(meshMap.has(k)){scene.remove(meshMap.get(k));meshMap.delete(k);}
+  world.delete(k);
+}
+function clearAll(){meshMap.forEach(m=>scene.remove(m));meshMap.clear();world.clear();}
+
+// ══════════════════════════════════════════════════════════════
+// TERRAIN  — guaranteed solid spawn, no water at spawn
+// ══════════════════════════════════════════════════════════════
+function sn(x,z,s){
+  const ix=Math.floor(x),iz=Math.floor(z),fx=x-ix,fz=z-iz;
+  const u=fx*fx*(3-2*fx),v=fz*fz*(3-2*fz);
+  const h=(a,b)=>{let n=(a*73856093^b*19349663^s*83492791)>>>0;n^=n<<13;n^=n>>17;n^=n<<5;return(n>>>0)/4294967296;};
+  return h(ix,iz)*(1-u)*(1-v)+h(ix+1,iz)*u*(1-v)+h(ix,iz+1)*(1-u)*v+h(ix+1,iz+1)*u*v;
+}
+function getH(x,z){
+  return Math.round(sn(x/10,z/10,1)*10+sn(x/4,z/4,2)*4+sn(x/2,z/2,3)*1.5-3);
+}
+
+const WX=64,WZ=64;
+let heightMap=[];
+let spawnPos=new THREE.Vector3(32,10,32);
+
+function generateWorld(){
+  clearAll();
+  heightMap=[];
+  for(let x=0;x<WX;x++){heightMap[x]=[];for(let z=0;z<WZ;z++)heightMap[x][z]=getH(x,z);}
+
+  for(let x=0;x<WX;x++){
+    for(let z=0;z<WZ;z++){
+      const h=heightMap[x][z];
+      // Bedrock
+      placeBlock(x,-8,z,'bedrock');
+      // Stone base
+      for(let y=-7;y<h-2;y++) placeBlock(x,y,z,'stone');
+
+      if(h>=0){
+        // Surface
+        placeBlock(x,h-2,z,'dirt');
+        placeBlock(x,h-1,z,'dirt');
+        const surf = h>6?'stone': h>3?'grass': h===3?'grass':'sand';
+        placeBlock(x,h,z,surf);
+        // Gravel patches underwater rim
+        if(h===0) placeBlock(x,h,z,'gravel');
+      } else {
+        // Water fill
+        placeBlock(x,h-1,z,'sand');
+        for(let y=h;y<=-1;y++) placeBlock(x,y,z,'water');
+      }
+    }
+  }
+
+  // Trees — only on grass, away from water
+  const treeSpots=[];
+  for(let i=0;i<15;i++){
+    const tx=4+Math.floor(Math.random()*56), tz=4+Math.floor(Math.random()*56);
+    const h=heightMap[tx][tz];
+    if(h>=2&&h<=5&&!treeSpots.some(([a,b])=>Math.abs(a-tx)<5&&Math.abs(b-tz)<5)){
+      treeSpots.push([tx,tz]);
+      for(let ty=h+1;ty<=h+5;ty++) placeBlock(tx,ty,tz,'wood');
+      for(let lx=-2;lx<=2;lx++) for(let lz=-2;lz<=2;lz++) for(let ly=0;ly<=2;ly++)
+        if(Math.abs(lx)+Math.abs(lz)+Math.abs(ly)<=3) placeBlock(tx+lx,h+4+ly,tz+lz,'leaves');
+    }
+  }
+
+  // Caves — hollow out some stone underground
+  for(let cx=5;cx<WX-5;cx+=8){
+    for(let cz=5;cz<WZ-5;cz+=8){
+      const ch=heightMap[cx][cz];
+      if(ch<2) continue;
+      for(let lx=-3;lx<=3;lx++) for(let lz=-3;lz<=3;lz++) for(let ly=-4;ly<=-1;ly++){
+        const d=Math.sqrt(lx*lx+ly*ly*2+lz*lz);
+        if(d<3.2&&Math.random()>0.3) removeBlock(cx+lx,ch+ly,cz+lz);
+      }
+    }
+  }
+
+  // Diamond deposits near bedrock
+  for(let i=0;i<20;i++){
+    const dx=2+Math.floor(Math.random()*(WX-4)),dz=2+Math.floor(Math.random()*(WZ-4));
+    for(let dy=-5;dy<=-4;dy++) if(Math.random()<0.6) placeBlock(dx,dy,dz,'diamond');
+  }
+
+  // Gold veins mid-depth
+  for(let i=0;i<25;i++){
+    const gx=2+Math.floor(Math.random()*(WX-4)),gz=2+Math.floor(Math.random()*(WZ-4));
+    for(let gy=-3;gy<=-2;gy++) if(Math.random()<0.5) placeBlock(gx,gy,gz,'gold');
+  }
+
+  // Find a solid spawn point — scan from center, guarantee land
+  let found=false;
+  for(let r=0;r<20&&!found;r++){
+    for(let dx=-r;dx<=r&&!found;dx++){
+      for(let dz=-r;dz<=r&&!found;dz++){
+        const sx=Math.round(WX/2)+dx, sz=Math.round(WZ/2)+dz;
+        if(sx<0||sx>=WX||sz<0||sz>=WZ) continue;
+        const sh=heightMap[sx][sz];
+        if(sh>=1){  // solid land, not water
+          spawnPos=new THREE.Vector3(sx, sh+2, sz);
+          found=true;
+        }
+      }
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// PLAYER
+// ══════════════════════════════════════════════════════════════
+const player={
+  pos:new THREE.Vector3(),
+  vel:new THREE.Vector3(),
+  yaw:0, pitch:-0.2,
+  onGround:false,
+  hp:20,hunger:20,
+  hungerT:0, dmgCD:0,
+  dead:false, fallFromY:0,
+  creative:false
+};
+
+function blockAt(x,y,z){return world.get(bk(Math.round(x),Math.round(y),Math.round(z)));}
+function solid(x,y,z){const t=blockAt(x,y,z);return!!t&&t!=='water'&&t!=='leaves'&&t!=='glass'&&t!=='lava'&&t!=='air';}
+function inWater(x,y,z){return blockAt(x,y,z)==='water';}
+function inLava(x,y,z){return blockAt(x,y,z)==='lava';}
+function intersectsPlayer(x,y,z){
+  const HW=.32,HH=.9;
+  return Math.abs(player.pos.x-x)<.5+HW &&
+         Math.abs((player.pos.y-.05)-y)<.5+HH &&
+         Math.abs(player.pos.z-z)<.5+HW;
+}
+function resetInput(){
+  for(const k in keys) delete keys[k];
+  dragging=false; dragMoved=false; tl=null;
+}
+
+function doPhysics(dt){
+  if(player.dead) return;
+  const p=player.pos;
+  const swim=inWater(p.x,p.y,p.z);
+  const burn=inLava(p.x,p.y,p.z);
+  const GRAV=player.creative?0: swim?5: burn?3: 22;
+  const SPEED=player.creative?14: keys.ShiftLeft?2.5: swim?3: 7;
+  const HH=0.85,HW=0.28;
+
+  if(!player.creative){
+    // Lava
+    if(burn){player.dmgCD-=dt;if(player.dmgCD<=0){damage(2,'lava');player.dmgCD=.5;}}
+    // Hunger drain
+    player.hungerT+=dt;
+    if(player.hungerT>=30){player.hunger=Math.max(0,player.hunger-1);player.hungerT=0;drawHUD();}
+    if(player.hunger===0){player.dmgCD-=dt;if(player.dmgCD<=0){damage(1,'hunger');player.dmgCD=3;}}
+  }
+
+  // Gravity
+  if(!player.creative) player.vel.y-=GRAV*dt;
+  else player.vel.y=0;
+
+  if(swim&&!player.creative){player.vel.y*=.8;if(keys.Space)player.vel.y=3;}
+  if(keys.Space&&player.onGround&&!swim&&!player.creative){player.vel.y=8.5;player.onGround=false;}
+  if(player.creative){
+    if(keys.Space) player.vel.y=SPEED;
+    else if(keys.ShiftLeft) player.vel.y=-SPEED;
+    else player.vel.y=0;
+  }
+
+  // Horizontal
+  const fwd=new THREE.Vector3(-Math.sin(player.yaw),0,-Math.cos(player.yaw));
+  const rgt=new THREE.Vector3(Math.cos(player.yaw),0,-Math.sin(player.yaw));
+  const mv=new THREE.Vector3();
+  if(keys.KeyW||keys.ArrowUp)    mv.addScaledVector(fwd,SPEED);
+  if(keys.KeyS||keys.ArrowDown)  mv.addScaledVector(fwd,-SPEED);
+  if(keys.KeyA||keys.ArrowLeft)  mv.addScaledVector(rgt,-SPEED);
+  if(keys.KeyD||keys.ArrowRight) mv.addScaledVector(rgt,SPEED);
+  player.vel.x=mv.x; player.vel.z=mv.z;
+
+  if(player.creative){p.x+=player.vel.x*dt;p.y+=player.vel.y*dt;p.z+=player.vel.z*dt;return;}
+
+  // Y
+  p.y+=player.vel.y*dt;
+  let og=false;
+  for(const dx of[-HW,HW]) for(const dz of[-HW,HW]){
+    if(solid(p.x+dx,p.y-HH-.05,p.z+dz)){
+      const fell=player.fallFromY-(p.y-HH);
+      if(!player.onGround&&fell>4) damage(Math.floor((fell-3)*2),'fall');
+      p.y=Math.ceil(p.y-HH-.05)+HH+.05;
+      player.vel.y=Math.max(0,player.vel.y); og=true;
+    }
+    if(solid(p.x+dx,p.y+HH+.05,p.z+dz)){
+      p.y=Math.floor(p.y+HH+.05)-HH-.05;
+      player.vel.y=Math.min(0,player.vel.y);
+    }
+  }
+  if(!og&&!player.onGround) player.fallFromY=Math.max(player.fallFromY,p.y);
+  else if(!og) player.fallFromY=p.y;
+  else player.fallFromY=p.y;
+  player.onGround=og;
+  // X
+  p.x+=player.vel.x*dt;
+  for(const dy of[-HH+.1,0,HH-.1]) for(const dz of[-HW,HW]){
+    const sx=Math.sign(player.vel.x);
+    if(sx!==0&&solid(p.x+sx*(HW+.05),p.y+dy,p.z+dz)){p.x-=player.vel.x*dt;player.vel.x=0;break;}
+  }
+  // Z
+  p.z+=player.vel.z*dt;
+  for(const dy of[-HH+.1,0,HH-.1]) for(const dx of[-HW,HW]){
+    const sz=Math.sign(player.vel.z);
+    if(sz!==0&&solid(p.x+dx,p.y+dy,p.z+sz*(HW+.05))){p.z-=player.vel.z*dt;player.vel.z=0;break;}
+  }
+  if(p.y<-20) damage(999,'void');
+}
+
+function damage(n,cause){
+  if(player.creative) return;
+  player.hp=Math.max(0,player.hp-n); drawHUD();
+  if(player.hp<=0&&!player.dead) die(cause);
+}
+function die(cause){
+  player.dead=true;
+  const msgs={fall:'You fell to your death!',lava:'Burned alive in lava!',void:'Fell into the void!',hunger:'You starved to death!'};
+  document.getElementById('deathmsg').textContent=msgs[cause]||'You perished.';
+  document.getElementById('dead').style.display='flex';
+}
+function respawn(){
+  player.dead=false;player.hp=20;player.hunger=20;player.vel.set(0,0,0);
+  player.pos.copy(spawnPos);player.fallFromY=spawnPos.y;player.dmgCD=0;
+  document.getElementById('dead').style.display='none';
+  drawHUD();
+}
+
+// ══════════════════════════════════════════════════════════════
+// HUD
+// ══════════════════════════════════════════════════════════════
+function drawHUD(){
+  const hr=document.getElementById('hprow'),hgr=document.getElementById('hgrow');
+  hr.innerHTML='';hgr.innerHTML='';
+  for(let i=0;i<10;i++){
+    const d=document.createElement('div'),v=player.hp-i*2;
+    d.className='pip hp'+(v<=0?' off':v===1?' half':'');hr.appendChild(d);
+  }
+  for(let i=0;i<10;i++){
+    const d=document.createElement('div');
+    d.className='pip hg'+(player.hunger-i*2<=0?' off':'');hgr.appendChild(d);
+  }
+  const surv=document.getElementById('survbadge');
+  surv.textContent=player.creative?'CREATIVE':'SURVIVAL';
+  surv.style.background=player.creative?'#1565C0':'#c62828';
+}
+
+// ══════════════════════════════════════════════════════════════
+// HOTBAR
+// ══════════════════════════════════════════════════════════════
+let sel=0;
+function selSlot(i){
+  sel=((i%HOTBAR.length)+HOTBAR.length)%HOTBAR.length;
+  document.querySelectorAll('.hs').forEach((s,j)=>s.classList.toggle('sel',j===sel));
+}
+function buildHotbar(){
+  const hb=document.getElementById('hotbar'); hb.innerHTML='';
+  HOTBAR.forEach((type,i)=>{
+    const s=document.createElement('div'); s.className='hs'+(i===0?' sel':'');
+    const ic=document.createElement('canvas'); ic.width=26;ic.height=26;ic.className='hs-icon';
+    const cx2=ic.getContext('2d'); const d=BD[type];
+    if(d){cx2.fillStyle=d.s;cx2.fillRect(0,0,26,26);cx2.fillStyle=d.t;cx2.fillRect(0,0,26,9);}
+    const lbl=document.createElement('div'); lbl.className='hs-label'; lbl.textContent=LABELS[type]||type.slice(0,5);
+    const nb=document.createElement('div'); nb.className='hs-num'; nb.textContent=i<9?i+1:'';
+    s.append(nb,ic,lbl); s.onclick=()=>selSlot(i); hb.appendChild(s);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// DAY/NIGHT
+// ══════════════════════════════════════════════════════════════
+let dayT=60,DAY=480,dayN=1;
+function stepDay(dt){
+  dayT+=dt;
+  if(dayT>=DAY){dayT%=DAY;dayN++;}
+  const t=dayT/DAY;
+  let sky,si,ai,fog,ov,lbl;
+  if(t<.08)     {sky='#FF7043';si=.3;ai=.25;fog='#FF7043';ov='rgba(30,0,0,.35)';lbl='Dawn';}
+  else if(t<.42){sky='#87CEEB';si=1.1;ai=.6;fog='#87CEEB';ov='transparent';lbl=t<.25?'Morning':'Noon';}
+  else if(t<.58){sky='#87CEEB';si=1.0;ai=.55;fog='#87CEEB';ov='transparent';lbl='Afternoon';}
+  else if(t<.68){sky='#FF8A65';si=.4;ai=.3;fog='#FF8A65';ov='rgba(20,0,0,.25)';lbl='Dusk';}
+  else          {sky='#0D1B2A';si=.05;ai=.08;fog='#0D1B2A';ov='rgba(0,0,30,.65)';lbl='Night';}
+  scene.background.set(sky);
+  scene.fog.color.set(fog);
+  sunLight.intensity=si; hemiLight.intensity=ai;
+  document.getElementById('dayover').style.background=ov;
+  document.getElementById('daytxt').textContent=`Day ${dayN} · ${lbl}`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// INPUT
+// ══════════════════════════════════════════════════════════════
+const keys={};
+let paused=false, chatOpen=false;
+document.addEventListener('keydown',e=>{
+  const typing=/^(INPUT|TEXTAREA)$/.test(e.target?.tagName||'');
+  if(typing){
+    if(e.code==='Escape'&&chatOpen){toggleChat();e.preventDefault();}
+    return;
+  }
+  keys[e.code]=true;
+  if(e.code==='Space') e.preventDefault();
+  if(e.code==='KeyT'&&!chatOpen){e.preventDefault();toggleChat();}
+  if(e.code==='Escape'){
+    if(chatOpen){toggleChat();return;}
+    paused=!paused;
+    document.getElementById('pause').style.display=paused?'flex':'none';
+  }
+  const n=e.key==='0'?10:parseInt(e.key);
+  if(n>=1&&n<=Math.min(10,HOTBAR.length)) selSlot(n-1);
+});
+document.addEventListener('keyup',e=>keys[e.code]=false);
+
+// Mouse drag look — only on game canvas, not UI
+let dragging=false,lx=0,ly=0,downX=0,downY=0,dragMoved=false;
+canvas.addEventListener('mousedown',e=>{
+  if(chatOpen||paused) return;
+  dragging=true; dragMoved=false;
+  lx=downX=e.clientX; ly=downY=e.clientY;
+});
+window.addEventListener('mouseup',()=>dragging=false);
+window.addEventListener('mousemove',e=>{
+  if(!dragging||chatOpen||paused) return;
+  if(Math.hypot(e.clientX-downX,e.clientY-downY)>4) dragMoved=true;
+  player.yaw  -=(e.clientX-lx)*.003;
+  player.pitch-=(e.clientY-ly)*.003;
+  player.pitch=Math.max(-1.5,Math.min(1.5,player.pitch));
+  lx=e.clientX; ly=e.clientY;
+});
+
+// Touch
+let tl=null;
+canvas.addEventListener('touchstart',e=>{if(chatOpen||paused)return;const t=e.touches[0];tl={x:t.clientX,y:t.clientY};},{passive:true});
+canvas.addEventListener('touchmove',e=>{
+  if(!tl||chatOpen||paused) return;
+  const t=e.touches[0];
+  player.yaw  -=(t.clientX-tl.x)*.004;
+  player.pitch-=(t.clientY-tl.y)*.004;
+  player.pitch=Math.max(-1.5,Math.min(1.5,player.pitch));
+  tl={x:t.clientX,y:t.clientY};
+},{passive:true});
+
+// Block interaction
+const ray=new THREE.Raycaster(undefined,undefined,0,8);
+canvas.addEventListener('click',e=>{
+  if(chatOpen||paused) return;
+  if(dragMoved){dragMoved=false;return;}
+  ray.setFromCamera(new THREE.Vector2(0,0),cam);
+  const hits=ray.intersectObjects([...meshMap.values()]);
+  if(hits.length){const ud=hits[0].object.userData;if(ud.type!=='bedrock'||player.creative)removeBlock(ud.x,ud.y,ud.z);}
+});
+canvas.addEventListener('contextmenu',e=>{
+  e.preventDefault();if(chatOpen||paused) return;
+  ray.setFromCamera(new THREE.Vector2(0,0),cam);
+  const hits=ray.intersectObjects([...meshMap.values()]);
+  if(hits.length){
+    const h=hits[0],n=h.face.normal,ud=h.object.userData;
+    const x=ud.x+Math.round(n.x),y=ud.y+Math.round(n.y),z=ud.z+Math.round(n.z);
+    if(!intersectsPlayer(x,y,z)) placeBlock(x,y,z,HOTBAR[sel]);
+  }
+});
+canvas.addEventListener('wheel',e=>{
+  if(chatOpen||paused) return;
+  e.preventDefault();selSlot(sel+(e.deltaY>0?1:-1));
+},{passive:false});
+
+// ══════════════════════════════════════════════════════════════
+// GAME LOOP
+// ══════════════════════════════════════════════════════════════
+const clock=new THREE.Clock();
+let gameRunning=false;
+function gameLoop(){
+  requestAnimationFrame(gameLoop);
+  if(!gameRunning) return;
+  const dt=Math.min(clock.getDelta(),.05);
+  if(!paused){
+    doPhysics(dt);
+    stepDay(dt);
+  }
+  cam.position.copy(player.pos).add(new THREE.Vector3(0,.75,0));
+  cam.rotation.order='YXZ';
+  cam.rotation.y=player.yaw;
+  cam.rotation.x=player.pitch;
+  const p=player.pos;
+  document.getElementById('tcoords').innerHTML=`X:${p.x.toFixed(0)} Y:${p.y.toFixed(0)} Z:${p.z.toFixed(0)}<br><span id="daytxt">${document.getElementById('daytxt')?.textContent||''}</span>`;
+  renderer.render(scene,cam);
+}
+gameLoop();
+
+// ══════════════════════════════════════════════════════════════
+// START / MENU
+// ══════════════════════════════════════════════════════════════
+function startGame(creative=false){
+  document.getElementById('menu').style.display='none';
+  document.getElementById('game').style.display='block';
+  player.creative=creative;
+  player.hp=20; player.hunger=20; player.dead=false;
+  player.hungerT=0; player.dmgCD=0; player.onGround=false;
+  player.vel.set(0,0,0);
+  generateWorld();
+  player.pos.copy(spawnPos);
+  player.yaw=Math.PI; player.pitch=-0.2;
+  player.fallFromY=spawnPos.y;
+  dayT=60; dayN=1; paused=false; chatOpen=false;
+  resetInput();
+  document.getElementById('pause').style.display='none';
+  document.getElementById('dead').style.display='none';
+  document.getElementById('chat').classList.remove('open');
+  document.getElementById('msgs').innerHTML='';
+  buildHotbar(); drawHUD();
+  gameRunning=true;
+  clock.start();
+  addMsg('ai', creative
+    ? 'Creative mode! Fly with SPACE/SHIFT, no fall damage or hunger.\n\nTell me what to build — castle, city, dungeon, whatever you want!'
+    : 'Survival mode! You spawned on solid land.\n\nWatch your ❤️ health and 🍗 hunger. Dig down for diamonds.\n\nPress T and tell me what to build!');
+}
+function goMenu(){
+  gameRunning=false;
+  resetInput();
+  document.getElementById('game').style.display='none';
+  document.getElementById('menu').style.display='flex';
+  document.getElementById('pause').style.display='none';
+  document.getElementById('dead').style.display='none';
+  paused=false;
+}
+function resumeGame(){paused=false;document.getElementById('pause').style.display='none';}
+
+// ══════════════════════════════════════════════════════════════
+// CHAT + CLAUDE
+// ══════════════════════════════════════════════════════════════
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chat').classList.toggle('open',chatOpen);
+  if(chatOpen) setTimeout(()=>document.getElementById('prompt').focus(),60);
+}
+let apiKey=(()=>{try{return localStorage.getItem('cc_k')||'';}catch(e){return '';}})();
+document.getElementById('apikey').value=apiKey;
+function saveKey(){
+  apiKey=document.getElementById('apikey').value.trim();
+  try{localStorage.setItem('cc_k',apiKey);}catch(e){}
+  document.getElementById('keyzone').querySelector('p').textContent='Saved ✓';
+  setTimeout(()=>{document.getElementById('keyzone').querySelector('p').textContent='Anthropic API key:';},2000);
+}
+function addMsg(cls,text){
+  const msgs=document.getElementById('msgs');
+  const d=document.createElement('div');d.className='m '+cls;d.textContent=text;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;
+}
+const SYS=`You are ClaudeCraft, an AI builder in a 3D Minecraft-like voxel world.
+
+Reply with ONE short sentence, then a javascript code block using:
+  placeBlock(x, y, z, type)   removeBlock(x, y, z)   clearAll()
+
+World: 64×64, x:0–63, z:0–63. Ground level is roughly y=0 to y=6. Build structures at y=7+ to appear above terrain.
+
+Available blocks: grass, dirt, stone, cobble, wood, plank, leaves, glass, sand, water, lava, gravel, snow, diamond, gold, brick, obsidian, glowstone, bedrock
+
+Make builds BIG (20×20+), detailed, use loops, multiple block types, realistic proportions. Always include the code block.`;
+
+async function sendToClaude(msg){
+  const el=addMsg('th','⏳ Claude is coding your build...');
+  document.getElementById('sbtn').disabled=true;document.getElementById('cst').textContent='building...';
+  try{
+    const h={'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+    if(apiKey) h['x-api-key']=apiKey;
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:h,
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:SYS,messages:[{role:'user',content:msg}]})
+    });
+    const data=await r.json();el.remove();
+    if(data.error) throw new Error(data.error.message);
+    const txt=(data.content||[]).map(b=>b.text||'').join('');
+    const code=txt.match(/```(?:js|javascript)?\n([\s\S]*?)```/);
+    const prose=txt.replace(/```[\s\S]*?```/g,'').trim();
+    if(prose) addMsg('ai',prose);
+    if(code){try{new Function('placeBlock','removeBlock','clearAll',code[1])(placeBlock,removeBlock,clearAll);}catch(e){addMsg('er','Build error: '+e.message);}}
+  }catch(e){el.remove();addMsg('er','Error: '+e.message+'\n\nPaste your Anthropic API key above.');}
+  document.getElementById('sbtn').disabled=false;document.getElementById('cst').textContent='ready';
+}
+function doSend(){
+  const p=document.getElementById('prompt');const v=p.value.trim();if(!v)return;
+  addMsg('me',v);p.value='';sendToClaude(v);
+}
+document.getElementById('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();doSend();}});
+</script>
+</body>
+</html>
