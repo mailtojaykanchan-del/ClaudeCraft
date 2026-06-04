@@ -22,6 +22,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 .menu-btn:hover{background:#8f8f8f;filter:brightness(1.12);transform:none;color:#ffffa0}
 .menu-btn:active{border-top-color:#2c2c2c;border-left-color:#2c2c2c;border-right-color:#d8d8d8;border-bottom-color:#d8d8d8;transform:translate(1px,1px)}
 .menu-btn.primary{background:#6f8f5f}
+#download-section{position:relative;z-index:1;width:280px;margin-top:8px;padding:7px;background:rgba(0,0,0,0.28);border:3px solid #111;border-top-color:#555;border-left-color:#555;box-shadow:0 0 0 2px #000}
+#download-title{color:#ffffa0;font:bold 10px 'Courier New';letter-spacing:2px;text-align:center;margin-bottom:6px;text-shadow:2px 2px 0 #000}
+#download-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#download-row .menu-btn{width:100%;margin:0;padding:9px 0;font-size:10px;box-shadow:none}
 #menu-version{position:absolute;bottom:14px;color:rgba(255,255,255,0.25);font-size:11px;z-index:1}
 
 /* Dressing room */
@@ -159,6 +163,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   <button id="playCreative" class="menu-btn" type="button">⚡ CREATIVE MODE</button>
   <button id="showDressingBtn" class="menu-btn" type="button">▣ DRESSING ROOM</button>
   <button id="showControlsBtn" class="menu-btn" type="button">⌨ CONTROLS</button>
+  <div id="download-section">
+    <div id="download-title">DOWNLOAD</div>
+    <div id="download-row">
+      <button id="downloadHtmlBtn" class="menu-btn" type="button">HTML</button>
+      <button id="downloadEngineBtn" class="menu-btn" type="button">ENGINE</button>
+    </div>
+  </div>
   <div id="menu-version">Minecraft Codex v1.0 · no sign-in</div>
 </div>
 
@@ -265,6 +276,19 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   window.addEventListener('resize',resizeStars);
   drawStars();
 })();
+
+function downloadLocalFile(path,name){
+  const a=document.createElement('a');
+  a.href=path;
+  a.download=name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+function downloadGameHTML(){downloadLocalFile('index.html','index.html');}
+function downloadEngine(){downloadLocalFile('three.min.js','three.min.js');}
+window.downloadGameHTML=downloadGameHTML;
+window.downloadEngine=downloadEngine;
 
 function showControls(){
   alert('WASD — Move\nSPACE — Jump\nSHIFT — Sneak\nMouse Drag — Look\nLeft Click — Break Block\nRight Click — Place Block\nC — Craft\nScroll — Change Block\nT or / — Open Codex\nESC — Pause');
@@ -1127,7 +1151,7 @@ document.addEventListener('pointerdown',e=>{
 // Mouse drag look — only on game canvas, not UI
 let dragging=false,lx=0,ly=0,downX=0,downY=0,dragMoved=false;
 canvas.addEventListener('mousedown',e=>{
-  if(chatOpen||paused) return;
+  if(chatOpen||paused||craftOpen) return;
   canvas.focus({preventScroll:true});
   dragging=true; dragMoved=false;
   lx=downX=e.clientX; ly=downY=e.clientY;
@@ -1469,6 +1493,8 @@ document.getElementById('playSurvival').addEventListener('click',()=>startGame()
 document.getElementById('playCreative').addEventListener('click',()=>startGame(true));
 document.getElementById('showDressingBtn').addEventListener('click',openDressingRoom);
 document.getElementById('showControlsBtn').addEventListener('click',showControls);
+document.getElementById('downloadHtmlBtn').addEventListener('click',downloadGameHTML);
+document.getElementById('downloadEngineBtn').addEventListener('click',downloadEngine);
 document.getElementById('saveDressingBtn').addEventListener('click',saveDressingRoom);
 document.getElementById('closeDressingBtn').addEventListener('click',closeDressingRoom);
 document.querySelectorAll('#movePad [data-key]').forEach(btn=>{
