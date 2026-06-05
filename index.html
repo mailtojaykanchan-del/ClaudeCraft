@@ -280,6 +280,17 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   drawStars();
 })();
 
+function downloadBlob(text,name,type){
+  const blob=new Blob([text],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
 function downloadLocalFile(path,name){
   const a=document.createElement('a');
   a.href=path;
@@ -288,7 +299,10 @@ function downloadLocalFile(path,name){
   a.click();
   a.remove();
 }
-function downloadGameHTML(){downloadLocalFile('index.html','index.html');}
+function downloadGameHTML(){
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  downloadBlob(html,'minecraft-codex.html','text/html');
+}
 function downloadEngine(){downloadLocalFile('three.min.js','three.min.js');}
 window.downloadGameHTML=downloadGameHTML;
 window.downloadEngine=downloadEngine;
