@@ -8,7 +8,8 @@ Open `index.html` in a browser. Keep `three.min.js` in the same folder.
 
 ## Mac App
 
-Double-click `installers/Install Minecraft Codex.command` to copy `Minecraft Codex.app` into `/Applications`.
+Double-click `Minecraft Codex.app` to copy it into `/Applications` and open it.
+You can also double-click `installers/Install Minecraft Codex.command` to copy it into `/Applications`.
 If macOS says Apple cannot verify the app, double-click `installers/Open Minecraft Codex.command`.
 
 ## Controls
