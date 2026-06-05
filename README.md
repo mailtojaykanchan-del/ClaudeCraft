@@ -6,6 +6,10 @@ An offline Minecraft-style voxel game built in one HTML file with Three.js.
 
 Open `index.html` in a browser. Keep `three.min.js` in the same folder.
 
+## Mac App
+
+Double-click `installers/Install Minecraft Codex.command` to copy `Minecraft Codex.app` into `/Applications`.
+
 ## Controls
 
 - `WASD` move

@@ -1,0 +1,9 @@
+#!/bin/bash
+APP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+GAME_FILE="$APP_DIR/Resources/index.html"
+
+if [ -d "/Applications/Google Chrome.app" ]; then
+  open -a "Google Chrome" "$GAME_FILE"
+else
+  open "$GAME_FILE"
+fi
