@@ -25,6 +25,7 @@ cp -R "$APP_SRC" "$APP_DST"
 chmod +x "$APP_DST/Contents/MacOS/MinecraftCodex"
 xattr -dr com.apple.quarantine "$APP_DST" 2>/dev/null || true
 xattr -cr "$APP_DST" 2>/dev/null || true
+codesign --force --deep --sign - "$APP_DST" >/dev/null 2>&1 || true
 
 echo "Done. Minecraft Codex is now in Applications."
 echo "Open it from Applications like a normal app."
