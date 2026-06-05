@@ -24,7 +24,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 .menu-btn.primary{background:#6f8f5f}
 #download-section{position:relative;z-index:1;width:280px;margin-top:8px;padding:7px;background:rgba(0,0,0,0.28);border:3px solid #111;border-top-color:#555;border-left-color:#555;box-shadow:0 0 0 2px #000}
 #download-title{color:#ffffa0;font:bold 10px 'Courier New';letter-spacing:2px;text-align:center;margin-bottom:6px;text-shadow:2px 2px 0 #000}
-#download-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#download-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 #download-row .menu-btn{width:100%;margin:0;padding:9px 0;font-size:10px;box-shadow:none}
 #menu-version{position:absolute;bottom:14px;color:rgba(255,255,255,0.25);font-size:11px;z-index:1}
 
@@ -170,6 +170,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
     <div id="download-row">
       <button id="downloadHtmlBtn" class="menu-btn" type="button">HTML</button>
       <button id="downloadEngineBtn" class="menu-btn" type="button">ENGINE</button>
+      <button id="downloadAppBtn" class="menu-btn" type="button">APP</button>
     </div>
   </div>
   <div id="menu-version">Minecraft Codex v1.0 · no sign-in</div>
@@ -280,8 +281,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   drawStars();
 })();
 
-function downloadBlob(text,name,type){
-  const blob=new Blob([text],{type});
+function downloadBlob(data,name,type){
+  const blob=data instanceof Blob?data:new Blob([data],{type});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   a.href=url;
@@ -303,9 +304,75 @@ function downloadGameHTML(){
   const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
   downloadBlob(html,'minecraft-codex.html','text/html');
 }
+function textBytes(text){return new TextEncoder().encode(text);}
+function zipHeader(size){const a=new Uint8Array(size);return {a,v:new DataView(a.buffer)};}
+const CRC_TABLE=(()=>{
+  const table=new Uint32Array(256);
+  for(let n=0;n<256;n++){
+    let c=n;
+    for(let k=0;k<8;k++) c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);
+    table[n]=c>>>0;
+  }
+  return table;
+})();
+function crc32(data){
+  let c=0xffffffff;
+  for(const b of data) c=CRC_TABLE[(c^b)&255]^(c>>>8);
+  return (c^0xffffffff)>>>0;
+}
+function dosStamp(){
+  const d=new Date();
+  return {
+    time:(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()/2|0),
+    date:((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate()
+  };
+}
+function makeZip(files){
+  const local=[],central=[],stamp=dosStamp();
+  let offset=0;
+  files.forEach(file=>{
+    const name=textBytes(file.name),data=file.data instanceof Uint8Array?file.data:textBytes(file.data);
+    const crc=crc32(data);
+    let h=zipHeader(30);
+    h.v.setUint32(0,0x04034b50,true);h.v.setUint16(4,20,true);h.v.setUint16(8,0,true);
+    h.v.setUint16(10,stamp.time,true);h.v.setUint16(12,stamp.date,true);h.v.setUint32(14,crc,true);
+    h.v.setUint32(18,data.length,true);h.v.setUint32(22,data.length,true);h.v.setUint16(26,name.length,true);
+    local.push(h.a,name,data);
+    h=zipHeader(46);
+    h.v.setUint32(0,0x02014b50,true);h.v.setUint16(4,20,true);h.v.setUint16(6,20,true);h.v.setUint16(10,0,true);
+    h.v.setUint16(12,stamp.time,true);h.v.setUint16(14,stamp.date,true);h.v.setUint32(16,crc,true);
+    h.v.setUint32(20,data.length,true);h.v.setUint32(24,data.length,true);h.v.setUint16(28,name.length,true);
+    h.v.setUint32(42,offset,true);
+    central.push(h.a,name);
+    offset+=30+name.length+data.length;
+  });
+  const centralSize=central.reduce((sum,part)=>sum+part.length,0),end=zipHeader(22);
+  end.v.setUint32(0,0x06054b50,true);end.v.setUint16(8,files.length,true);end.v.setUint16(10,files.length,true);
+  end.v.setUint32(12,centralSize,true);end.v.setUint32(16,offset,true);
+  return new Blob([...local,...central,end.a],{type:'application/zip'});
+}
+async function downloadAppZip(){
+  let engine;
+  try{
+    const res=await fetch('three.min.js',{cache:'no-store'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    engine=await res.text();
+  }catch(e){
+    alert('APP download needs three.min.js. Try from the website, or use HTML and ENGINE separately.');
+    return;
+  }
+  const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  const readme='Minecraft Codex App\n\nOpen minecraft-codex.html in Chrome. Keep three.min.js in this folder.\n';
+  downloadBlob(makeZip([
+    {name:'minecraft-codex.html',data:html},
+    {name:'three.min.js',data:engine},
+    {name:'README.txt',data:readme}
+  ]),'minecraft-codex-app.zip','application/zip');
+}
 function downloadEngine(){downloadLocalFile('three.min.js','three.min.js');}
 window.downloadGameHTML=downloadGameHTML;
 window.downloadEngine=downloadEngine;
+window.downloadAppZip=downloadAppZip;
 
 function showControls(){
   alert('WASD — Move\nSPACE — Jump\nSHIFT — Sneak\nMouse Drag — Look\nLeft Click — Break Block\nRight Click — Place Block\nC — Craft\nScroll — Change Block\nT or / — Open Codex\nESC — Pause');
@@ -1512,6 +1579,7 @@ document.getElementById('showDressingBtn').addEventListener('click',openDressing
 document.getElementById('showControlsBtn').addEventListener('click',showControls);
 document.getElementById('downloadHtmlBtn').addEventListener('click',downloadGameHTML);
 document.getElementById('downloadEngineBtn').addEventListener('click',downloadEngine);
+document.getElementById('downloadAppBtn').addEventListener('click',downloadAppZip);
 document.getElementById('saveDressingBtn').addEventListener('click',saveDressingRoom);
 document.getElementById('closeDressingBtn').addEventListener('click',closeDressingRoom);
 document.querySelectorAll('#movePad [data-key]').forEach(btn=>{
