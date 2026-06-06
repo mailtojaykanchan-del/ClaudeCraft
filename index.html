@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><title>Minecraft Codex</title>
+<meta charset="UTF-8"><title>Minecraft Codex Edition</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Courier New',monospace;text-shadow:2px 2px 0 rgba(0,0,0,0.75)}
@@ -16,7 +16,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   background-size:48px 48px,48px 48px,100% 100%;background-position:0 0,24px 24px,0 0}
 #menu-stars{position:absolute;inset:0;overflow:hidden}
 #menu-title{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;margin-bottom:40px}
-#menu-title h1{font-size:46px;line-height:1.05;font-weight:900;letter-spacing:4px;color:#d8d8d8;text-align:center;text-shadow:4px 4px 0 #2b2b2b,6px 6px 0 #111;margin-bottom:4px}
+#menu-title h1{font-size:38px;line-height:1.05;font-weight:900;letter-spacing:2px;color:#d8d8d8;text-align:center;text-shadow:4px 4px 0 #2b2b2b,6px 6px 0 #111;margin-bottom:4px}
 #menu-title p{color:#ffe45c;font-size:13px;letter-spacing:2px;text-shadow:2px 2px 0 #3f2c00;transform:rotate(-7deg)}
 .menu-btn{position:relative;z-index:1;display:block;width:280px;padding:12px 0;margin:5px 0;font:bold 15px 'Courier New';letter-spacing:1px;color:#fff;background:#7f7f7f;border:3px solid #000;border-top-color:#d8d8d8;border-left-color:#d8d8d8;border-right-color:#2c2c2c;border-bottom-color:#2c2c2c;border-radius:0;cursor:pointer;text-align:center;text-decoration:none;transition:filter .08s,transform .08s;box-shadow:0 0 0 2px #000}
 .menu-btn:hover{background:#8f8f8f;filter:brightness(1.12);transform:none;color:#ffffa0}
@@ -158,8 +158,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   <div id="menu-bg"></div>
   <canvas id="menu-stars-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
   <div id="menu-title">
-    <h1>⬛ MINECRAFT<br>CODEX</h1>
-    <p>CODEX EDITION</p>
+    <h1>⬛ MINECRAFT<br>CODEX EDITION</h1>
+    <p>NO SIGN-IN</p>
   </div>
   <button id="playSurvival" class="menu-btn primary" type="button">▶ PLAY SURVIVAL</button>
   <button id="playCreative" class="menu-btn" type="button">⚡ CREATIVE MODE</button>
@@ -170,10 +170,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
     <div id="download-row">
       <a id="downloadHtmlBtn" class="menu-btn" href="index.html" download="minecraft-codex.html">HTML</a>
       <a id="downloadEngineBtn" class="menu-btn" href="three.min.js" download="three.min.js">ENGINE</a>
-      <a id="downloadAppBtn" class="menu-btn" href="Minecraft-Codex-Drag-Install.dmg" download="Minecraft-Codex-Drag-Install.dmg">APP</a>
+      <a id="downloadAppBtn" class="menu-btn" href="Minecraft-Codex-Edition-Drag-Install.dmg" download="Minecraft-Codex-Edition-Drag-Install.dmg">APP</a>
     </div>
   </div>
-  <div id="menu-version">Minecraft Codex v1.0 · no sign-in</div>
+  <div id="menu-version">Minecraft Codex Edition v1.0 · no sign-in</div>
 </div>
 
 <div id="dressing">
@@ -201,7 +201,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   <div id="dayover"></div>
   <div id="xhair"></div>
   <div id="tophud">
-    <span id="logo">⬛ MINECRAFT CODEX</span>
+    <span id="logo">⬛ MINECRAFT CODEX EDITION</span>
     <span id="survbadge">SURVIVAL</span>
     <span id="skinbadge"></span>
     <div id="tcoords">X:0 Y:0 Z:0<br><span id="daytxt">Day 1</span></div>
@@ -340,7 +340,7 @@ window.closeDressingRoom=closeDressingRoom;
 
 if(!window.THREE){
   window.startGame=function(){
-    alert('Minecraft Codex could not load its 3D engine. Make sure index.html and three.min.js are in the same folder, then reload.');
+    alert('Minecraft Codex Edition could not load its 3D engine. Make sure index.html and three.min.js are in the same folder, then reload.');
   };
   throw new Error('Three.js failed to load');
 }
@@ -1256,8 +1256,8 @@ function startGame(creative=false){
   gameRunning=true;
   clock.start();
   addMsg('ai', creative
-    ? 'Minecraft Codex creative mode! Fly with SPACE/SHIFT, no fall damage or hunger.\n\nAsk Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
-    : 'Minecraft Codex survival mode! You spawned on solid land.\n\nWatch your health and hunger. Press T or / and ask Codex to build.');
+    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT, no fall damage or hunger.\n\nAsk Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
+    : 'Minecraft Codex Edition survival mode! You spawned on solid land.\n\nWatch your health and hunger. Press T or / and ask Codex to build.');
 }
 window.startGame=startGame;
 function goMenu(){

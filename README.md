@@ -1,4 +1,4 @@
-# Minecraft Codex
+# Minecraft Codex Edition
 
 An offline Minecraft-style voxel game built in one HTML file with Three.js.
 
@@ -8,10 +8,10 @@ Open `index.html` in a browser. Keep `three.min.js` in the same folder.
 
 ## Mac App
 
-Download `Minecraft-Codex-Drag-Install.dmg`, open it, then drag `Minecraft Codex.app` to Applications.
-You can also use `Minecraft-Codex-Installer.pkg` for the package installer.
-Double-click `Minecraft Codex.app` to copy it into `/Applications` and open it.
-You can also double-click `installers/Install Minecraft Codex.command` to copy it into `/Applications`.
+Download `Minecraft-Codex-Edition-Drag-Install.dmg`, open it, then drag `Minecraft Codex Edition.app` to Applications.
+You can also use `Minecraft-Codex-Edition-Installer.pkg` for the package installer.
+Double-click `Minecraft Codex Edition.app` to open the game in its own app window.
+You can also double-click `installers/Install Minecraft Codex Edition.command` to copy it into `/Applications`.
 If macOS says Apple cannot verify the app or installer, right-click it and choose Open once.
 
 ## Controls
@@ -22,7 +22,7 @@ If macOS says Apple cannot verify the app or installer, right-click it and choos
 - Left click break
 - Right click place
 - `C` craft
-- `T` or `/` open Minecraft Codex builder
+- `T` or `/` open the Minecraft Codex Edition builder
 - `Esc` pause
 
 ## Features
