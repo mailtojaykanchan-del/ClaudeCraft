@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><title>Minecraft Codex</title>
+<meta charset="UTF-8"><title>Minecraft Codex Edition</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Courier New',monospace;text-shadow:2px 2px 0 rgba(0,0,0,0.75)}
@@ -16,12 +16,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   background-size:48px 48px,48px 48px,100% 100%;background-position:0 0,24px 24px,0 0}
 #menu-stars{position:absolute;inset:0;overflow:hidden}
 #menu-title{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;margin-bottom:40px}
-#menu-title h1{font-size:46px;line-height:1.05;font-weight:900;letter-spacing:4px;color:#d8d8d8;text-align:center;text-shadow:4px 4px 0 #2b2b2b,6px 6px 0 #111;margin-bottom:4px}
+#menu-title h1{font-size:38px;line-height:1.05;font-weight:900;letter-spacing:2px;color:#d8d8d8;text-align:center;text-shadow:4px 4px 0 #2b2b2b,6px 6px 0 #111;margin-bottom:4px}
 #menu-title p{color:#ffe45c;font-size:13px;letter-spacing:2px;text-shadow:2px 2px 0 #3f2c00;transform:rotate(-7deg)}
-.menu-btn{position:relative;z-index:1;width:280px;padding:12px 0;margin:5px 0;font:bold 15px 'Courier New';letter-spacing:1px;color:#fff;background:#7f7f7f;border:3px solid #000;border-top-color:#d8d8d8;border-left-color:#d8d8d8;border-right-color:#2c2c2c;border-bottom-color:#2c2c2c;border-radius:0;cursor:pointer;text-align:center;transition:filter .08s,transform .08s;box-shadow:0 0 0 2px #000}
+.menu-btn{position:relative;z-index:1;display:block;width:280px;padding:12px 0;margin:5px 0;font:bold 15px 'Courier New';letter-spacing:1px;color:#fff;background:#7f7f7f;border:3px solid #000;border-top-color:#d8d8d8;border-left-color:#d8d8d8;border-right-color:#2c2c2c;border-bottom-color:#2c2c2c;border-radius:0;cursor:pointer;text-align:center;text-decoration:none;transition:filter .08s,transform .08s;box-shadow:0 0 0 2px #000}
 .menu-btn:hover{background:#8f8f8f;filter:brightness(1.12);transform:none;color:#ffffa0}
 .menu-btn:active{border-top-color:#2c2c2c;border-left-color:#2c2c2c;border-right-color:#d8d8d8;border-bottom-color:#d8d8d8;transform:translate(1px,1px)}
 .menu-btn.primary{background:#6f8f5f}
+#download-section{position:relative;z-index:1;width:280px;margin-top:8px;padding:7px;background:rgba(0,0,0,0.28);border:3px solid #111;border-top-color:#555;border-left-color:#555;box-shadow:0 0 0 2px #000}
+#download-title{color:#ffffa0;font:bold 10px 'Courier New';letter-spacing:2px;text-align:center;margin-bottom:6px;text-shadow:2px 2px 0 #000}
+#download-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+#download-row .menu-btn{width:100%;margin:0;padding:9px 0;font-size:10px;box-shadow:none}
 #menu-version{position:absolute;bottom:14px;color:rgba(255,255,255,0.25);font-size:11px;z-index:1}
 
 /* Dressing room */
@@ -93,6 +97,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 /* Chat */
 #chatbtn{position:absolute;top:8px;right:12px;z-index:10;pointer-events:all;background:#303030;color:#fff;font:bold 11px 'Courier New';padding:5px 10px;border:3px solid #000;border-top-color:#777;border-left-color:#777;border-radius:0;cursor:pointer;letter-spacing:1px}
 #chatbtn:hover{color:#ffffa0}
+#craftbtn{position:absolute;top:42px;right:12px;z-index:10;pointer-events:all;background:#303030;color:#fff;font:bold 11px 'Courier New';padding:5px 10px;border:3px solid #000;border-top-color:#777;border-left-color:#777;border-radius:0;cursor:pointer;letter-spacing:1px}
+#craftbtn:hover{color:#ffffa0}
 #chat{position:absolute;left:18px;right:18px;bottom:92px;max-width:780px;height:232px;background:transparent;border:0;display:none;flex-direction:column;z-index:25;pointer-events:all;text-shadow:2px 2px 0 #000;color:#fff}
 #chat.open{display:flex}
 #chead{padding:0 0 6px;display:flex;align-items:center;gap:8px;flex-shrink:0}
@@ -118,6 +124,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 #sbtn:hover{background:#5DCAA5}
 #sbtn:disabled{background:#333;cursor:default}
 
+/* Crafting */
+#craft{position:absolute;inset:0;z-index:48;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);pointer-events:all;text-shadow:none}
+#craft.open{display:flex}
+#craft-panel{width:min(540px,calc(100vw - 28px));max-height:min(620px,calc(100vh - 36px));overflow:hidden;background:#c6c6c6;color:#222;border:4px solid #000;border-top-color:#fff;border-left-color:#fff;border-right-color:#555;border-bottom-color:#555;padding:14px;display:flex;flex-direction:column;gap:10px}
+#craft-head{display:flex;align-items:center;gap:10px;border-bottom:3px solid #777;padding-bottom:8px}
+#craft-head h2{font-size:18px;letter-spacing:2px;color:#333;text-shadow:1px 1px 0 #fff;flex:1}
+#craft-close{width:34px;height:30px;background:#7f7f7f;color:#fff;border:3px solid #000;border-top-color:#d8d8d8;border-left-color:#d8d8d8;font:bold 14px 'Courier New';cursor:pointer}
+#craftList{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;overflow:auto;padding-right:2px}
+.craft-recipe{min-height:72px;text-align:left;background:#8f8f8f;border:3px solid #000;border-top-color:#d8d8d8;border-left-color:#d8d8d8;color:#fff;padding:8px;cursor:pointer;font:12px 'Courier New';text-shadow:1px 1px 0 #000;display:flex;flex-direction:column;gap:5px}
+.craft-recipe:hover{filter:brightness(1.1)}
+.craft-recipe:disabled{filter:grayscale(1) brightness(.55);cursor:default}
+.craft-title{font-weight:bold;color:#ffffa0}
+.craft-cost{font-size:10px;color:#ededed;line-height:1.35}
+#craft-note{font-size:10px;color:#333;line-height:1.4}
+
 /* ESC / Pause */
 #pause{position:absolute;inset:0;background:rgba(0,0,0,0.55);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:50;gap:10px;pointer-events:all}
 #pause h2{color:#fff;font-size:28px;letter-spacing:3px;margin-bottom:10px}
@@ -137,14 +158,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   <div id="menu-bg"></div>
   <canvas id="menu-stars-canvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
   <div id="menu-title">
-    <h1>⬛ MINECRAFT<br>CODEX</h1>
-    <p>CODEX EDITION</p>
+    <h1>⬛ MINECRAFT<br>CODEX EDITION</h1>
+    <p>NO SIGN-IN</p>
   </div>
   <button id="playSurvival" class="menu-btn primary" type="button">▶ PLAY SURVIVAL</button>
   <button id="playCreative" class="menu-btn" type="button">⚡ CREATIVE MODE</button>
   <button id="showDressingBtn" class="menu-btn" type="button">▣ DRESSING ROOM</button>
   <button id="showControlsBtn" class="menu-btn" type="button">⌨ CONTROLS</button>
-  <div id="menu-version">Minecraft Codex v1.0 · no sign-in</div>
+  <div id="download-section">
+    <div id="download-title">DOWNLOAD</div>
+    <div id="download-row">
+      <a id="downloadHtmlBtn" class="menu-btn" href="index.html" download="minecraft-codex-edition.html">HTML</a>
+      <a id="downloadEngineBtn" class="menu-btn" href="three.min.js" download="three.min.js">ENGINE</a>
+      <a id="downloadAppBtn" class="menu-btn" href="Minecraft-Codex-Edition-Drag-Install.dmg" download="Minecraft-Codex-Edition-Drag-Install.dmg">APP</a>
+    </div>
+  </div>
+  <div id="menu-version">Minecraft Codex Edition v1.1.5 · no sign-in</div>
 </div>
 
 <div id="dressing">
@@ -172,7 +201,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   <div id="dayover"></div>
   <div id="xhair"></div>
   <div id="tophud">
-    <span id="logo">⬛ MINECRAFT CODEX</span>
+    <span id="logo">⬛ MINECRAFT CODEX EDITION</span>
     <span id="survbadge">SURVIVAL</span>
     <span id="skinbadge"></span>
     <div id="tcoords">X:0 Y:0 Z:0<br><span id="daytxt">Day 1</span></div>
@@ -182,7 +211,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
     <div class="barrow" id="hgrow"></div>
   </div>
   <div id="hotbar"></div>
-  <div id="hint">WASD — move &nbsp; SPACE — jump<br>Drag mouse — look around<br>Click — break block<br>Right-click — place collected block<br>Scroll — change block &nbsp; E — eat food &nbsp; T or / — Codex</div>
+  <div id="hint">WASD — move &nbsp; SPACE — jump<br>Click — break &nbsp; Right-click — place/use<br>C — craft &nbsp; Scroll/click — blocks<br>E — eat food &nbsp; T or / — Codex</div>
   <div id="movePad">
     <span class="movePad-spacer"></span><button class="w" type="button" data-key="KeyW">W</button><span class="movePad-spacer"></span>
     <button type="button" data-key="KeyA">A</button><button type="button" data-key="KeyS">S</button><button type="button" data-key="KeyD">D</button>
@@ -190,6 +219,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   </div>
   <div id="moveStatus">MOVE: ready</div>
   <button id="chatbtn" onclick="toggleChat()">[/] CODEX</button>
+  <button id="craftbtn" onclick="toggleCrafting()">[C] CRAFT</button>
   <div id="chat">
     <div id="chead"><h2>CODEX</h2><div class="cdot"></div><span id="cst">ready</span></div>
     <div id="keyzone">
@@ -197,6 +227,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
     </div>
     <div id="msgs"></div>
     <div id="inprow"><textarea id="prompt" rows="1" placeholder="Ask Codex what to build..."></textarea><button id="sbtn" onclick="doSend()">↵</button></div>
+  </div>
+  <div id="craft">
+    <div id="craft-panel">
+      <div id="craft-head"><h2>CRAFTING</h2><button id="craft-close" type="button" onclick="closeCrafting()">X</button></div>
+      <div id="craftList"></div>
+      <div id="craft-note">Break blocks to collect materials. Click a recipe to craft into your hotbar.</div>
+    </div>
   </div>
   <div id="pause">
     <h2>PAUSED</h2>
@@ -245,7 +282,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 })();
 
 function showControls(){
-  alert('WASD — Move\nSPACE — Jump\nSHIFT — Sneak\nMouse Drag — Look\nLeft Click — Break Block\nRight Click — Place Block\nScroll — Change Block\nT or / — Open Codex\nESC — Pause');
+  alert('WASD — Move\nSPACE — Jump\nSHIFT — Sneak\nMouse Drag — Look\nLeft Click — Break Block\nRight Click — Place Block\nC — Craft\nScroll — Change Block\nT or / — Open Codex\nESC — Pause');
 }
 window.showControls=showControls;
 
@@ -303,7 +340,7 @@ window.closeDressingRoom=closeDressingRoom;
 
 if(!window.THREE){
   window.startGame=function(){
-    alert('Minecraft Codex could not load its 3D engine. Make sure index.html and three.min.js are in the same folder, then reload.');
+    alert('Minecraft Codex Edition could not load its 3D engine. Make sure index.html and three.min.js are in the same folder, then reload.');
   };
   throw new Error('Three.js failed to load');
 }
@@ -320,6 +357,8 @@ const BD = {
   iron:     {t:'#d8b38a',s:'#b98962',b:'#d8b38a'},
   wood:     {t:'#bcaaa4',s:'#795548',b:'#bcaaa4'},
   plank:    {t:'#FFCC80',s:'#FFCC80',b:'#FFCC80'},
+  crafting_table:{t:'#B98247',s:'#7B4A24',b:'#5D3218'},
+  furnace:  {t:'#777777',s:'#5f5f5f',b:'#3f3f3f'},
   leaves:   {t:'#2E7D32',s:'#388E3C',b:'#2E7D32',tr:1,op:.88},
   glass:    {t:'#B3E5FC',s:'#B3E5FC',b:'#B3E5FC',tr:1,op:.35},
   sand:     {t:'#FFF176',s:'#F9A825',b:'#FFF176'},
@@ -337,8 +376,10 @@ const BD = {
   apple:    {t:'#D32F2F',s:'#B71C1C',b:'#D32F2F'},
   bread:    {t:'#F9A825',s:'#E65100',b:'#F9A825'}
 };
-const HOTBAR = ['grass','dirt','stone','cobble','coal','iron','wood','plank','glass','sand','lava','diamond','brick','glowstone','gold','obsidian','snow','cactus','apple','bread'];
-const LABELS = {grass:'Grass',dirt:'Dirt',stone:'Stone',cobble:'Cobble',coal:'Coal',iron:'Iron',wood:'Wood',plank:'Plank',glass:'Glass',sand:'Sand',lava:'Lava',diamond:'Diamond',brick:'Brick',glowstone:'Glow',gold:'Gold',obsidian:'Void',snow:'Snow',cactus:'Cactus',apple:'Apple',bread:'Bread'};
+const SURVIVAL_HOTBAR = ['grass','dirt','stone','cobble','coal','iron','wood','plank','crafting_table','furnace','glass','sand','lava','diamond','brick','glowstone','gold','obsidian','snow','cactus','apple','bread'];
+const CREATIVE_HOTBAR = ['grass','dirt','stone','cobble','coal','iron','wood','plank','crafting_table','furnace','leaves','glass','sand','water','lava','gravel','snow','diamond','gold','cactus','brick','obsidian','glowstone','bedrock'];
+let HOTBAR = SURVIVAL_HOTBAR.slice();
+const LABELS = {grass:'Grass',dirt:'Dirt',stone:'Stone',cobble:'Cobble',coal:'Coal',iron:'Iron',wood:'Wood',plank:'Plank',crafting_table:'Table',furnace:'Furnace',leaves:'Leaves',glass:'Glass',sand:'Sand',water:'Water',lava:'Lava',gravel:'Gravel',diamond:'Diamond',brick:'Brick',glowstone:'Glow',gold:'Gold',obsidian:'Void',bedrock:'Bedrock',snow:'Snow',cactus:'Cactus',apple:'Apple',bread:'Bread'};
 const FOOD_ITEMS = {apple:{hp:2,hunger:5},bread:{hp:3,hunger:8}};
 
 // ══════════════════════════════════════════════════════════════
@@ -552,6 +593,33 @@ function carveCavesInChunk(cx,cz){
     }
   }
 }
+function carveCaveBubble(cx,cy,cz,rx=2.2,ry=1.4,rz=2.2){
+  for(let dx=-Math.ceil(rx);dx<=Math.ceil(rx);dx++) for(let dy=-Math.ceil(ry);dy<=Math.ceil(ry);dy++) for(let dz=-Math.ceil(rz);dz<=Math.ceil(rz);dz++){
+    const x=cx+dx,y=cy+dy,z=cz+dz;
+    if((dx*dx)/(rx*rx)+(dy*dy)/(ry*ry)+(dz*dz)/(rz*rz)>1) continue;
+    const t=blockAt(x,y,z);
+    if(t&&t!=='bedrock') removeBlock(x,y,z);
+  }
+}
+function addCaveEntrances(cx,cz){
+  const bx=cx*CHUNK_SIZE,bz=cz*CHUNK_SIZE;
+  let made=0;
+  for(let i=0;i<5&&made<2;i++){
+    const x=bx+2+Math.floor(rnd3(cx,i,cz,180)*(CHUNK_SIZE-4));
+    const z=bz+2+Math.floor(rnd3(cx,i,cz,181)*(CHUNK_SIZE-4));
+    const h=getH(x,z), surf=surfaceFor(x,z,h);
+    if(h<=SEA+2||h>20||surf==='sand') continue;
+    const angle=rnd3(cx,i,cz,182)*Math.PI*2;
+    const dx=Math.round(Math.cos(angle)), dz=Math.round(Math.sin(angle));
+    for(let t=0;t<11;t++){
+      const tx=x+Math.round(dx*t*.55), tz=z+Math.round(dz*t*.55);
+      if(chunkCoord(tx)!==cx||chunkCoord(tz)!==cz) break;
+      carveCaveBubble(tx,h-1-Math.floor(t*.45),tz,2.2,1.5,2.2);
+    }
+    placeBlock(x,h,z,'gravel');
+    made++;
+  }
+}
 function addOreVeins(cx,cz,type,count,minY,maxY,size,seed){
   const bx=cx*CHUNK_SIZE,bz=cz*CHUNK_SIZE;
   for(let i=0;i<count;i++){
@@ -606,6 +674,7 @@ function generateChunk(cx,cz){
   const bx=cx*CHUNK_SIZE,bz=cz*CHUNK_SIZE;
   for(let lx=0;lx<CHUNK_SIZE;lx++) for(let lz=0;lz<CHUNK_SIZE;lz++) generateColumn(bx+lx,bz+lz);
   carveCavesInChunk(cx,cz);
+  addCaveEntrances(cx,cz);
   addOreVeins(cx,cz,'coal',10,-3,20,2,130);
   addOreVeins(cx,cz,'iron',7,-4,16,1,131);
   addOreVeins(cx,cz,'gold',4,-5,5,1,132);
@@ -739,8 +808,6 @@ function doPhysics(dt){
   if(isDown('KeyD','d','ArrowRight','arrowright')) mv.addScaledVector(rgt,SPEED);
   player.vel.x=mv.x; player.vel.z=mv.z;
 
-  if(player.creative){p.x+=player.vel.x*dt;p.y+=player.vel.y*dt;p.z+=player.vel.z*dt;return;}
-
   // Y
   p.y+=player.vel.y*dt;
   let og=false;
@@ -823,6 +890,10 @@ function drawHUD(){
 // ══════════════════════════════════════════════════════════════
 let sel=0;
 let inventory={};
+function setHotbarForMode(){
+  HOTBAR=(player.creative?CREATIVE_HOTBAR:SURVIVAL_HOTBAR).slice();
+  sel=0;
+}
 function resetInventory(){
   inventory={};
   HOTBAR.forEach(type=>inventory[type]=0);
@@ -905,6 +976,84 @@ function buildHotbar(){
   updateHotbarCounts();
 }
 
+const RECIPES=[
+  {out:'plank',count:4,in:{wood:1},name:'Planks'},
+  {out:'crafting_table',count:1,in:{plank:4},name:'Crafting Table'},
+  {out:'wood',count:1,in:{plank:4},name:'Wood Block'},
+  {out:'cobble',count:1,in:{stone:1},name:'Cobblestone'},
+  {out:'furnace',count:1,in:{cobble:8},name:'Furnace',table:true},
+  {out:'brick',count:2,in:{cobble:2,coal:1},name:'Bricks',table:true},
+  {out:'glass',count:2,in:{sand:2,coal:1},name:'Glass',table:true},
+  {out:'glowstone',count:1,in:{glass:2,gold:1},name:'Glowstone',table:true},
+  {out:'obsidian',count:1,in:{lava:1,stone:2},name:'Obsidian',table:true}
+];
+function itemName(type){return LABELS[type]||type;}
+function formatReq(req){return Object.entries(req).map(([t,n])=>n+' '+itemName(t)).join(', ');}
+function hasItems(req){return player.creative||Object.entries(req).every(([t,n])=>(inventory[t]||0)>=n);}
+function nearCraftingTable(){
+  const px=Math.round(player.pos.x),py=Math.round(player.pos.y),pz=Math.round(player.pos.z);
+  for(let x=px-2;x<=px+2;x++) for(let y=py-1;y<=py+1;y++) for(let z=pz-2;z<=pz+2;z++){
+    if(blockAt(x,y,z)==='crafting_table') return true;
+  }
+  return false;
+}
+function addCrafted(type,count){
+  if(!HOTBAR.includes(type)) return;
+  inventory[type]=(inventory[type]||0)+count;
+  updateHotbarCounts();
+}
+let usingCraftingTable=false;
+function drawCrafting(){
+  const list=document.getElementById('craftList');
+  if(!list) return;
+  list.innerHTML='';
+  RECIPES.forEach((r,i)=>{
+    const tableOk=player.creative||!r.table||usingCraftingTable;
+    const can=tableOk&&hasItems(r.in);
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='craft-recipe';
+    b.disabled=!can;
+    b.onclick=()=>craftRecipe(i);
+    const need=r.table&&!tableOk?'Needs crafting table<br>':'';
+    b.innerHTML='<div class="craft-title">'+r.count+' '+r.name+'</div><div class="craft-cost">'+need+formatReq(r.in)+'</div>';
+    list.appendChild(b);
+  });
+  const note=document.getElementById('craft-note');
+  if(note) note.textContent=usingCraftingTable||player.creative
+    ? 'Crafting table open. Advanced recipes are available.'
+    : 'Basic crafting. Craft and place a crafting table for advanced recipes.';
+}
+function craftRecipe(i){
+  const r=RECIPES[i];
+  if(!r) return;
+  if(!player.creative&&r.table&&!usingCraftingTable){flashStatus('NEED CRAFTING TABLE');drawCrafting();return;}
+  if(!player.creative&&!hasItems(r.in)){flashStatus('NEED '+formatReq(r.in).toUpperCase());drawCrafting();return;}
+  if(!player.creative){
+    Object.entries(r.in).forEach(([t,n])=>inventory[t]=(inventory[t]||0)-n);
+    addCrafted(r.out,r.count);
+  }
+  flashStatus('CRAFTED '+r.count+' '+itemName(r.out).toUpperCase());
+  drawCrafting();
+}
+function openCrafting(fromTable=false){
+  if(chatOpen||paused||player.dead) return;
+  craftOpen=true;
+  usingCraftingTable=!!fromTable||player.creative||nearCraftingTable();
+  clearKeys();
+  drawCrafting();
+  document.getElementById('craft').classList.add('open');
+}
+function closeCrafting(){
+  craftOpen=false;
+  usingCraftingTable=false;
+  document.getElementById('craft').classList.remove('open');
+  ensureGameFocus();
+}
+function toggleCrafting(){craftOpen?closeCrafting():openCrafting();}
+window.closeCrafting=closeCrafting;
+window.craftRecipe=craftRecipe;
+
 // ══════════════════════════════════════════════════════════════
 // DAY/NIGHT
 // ══════════════════════════════════════════════════════════════
@@ -931,12 +1080,12 @@ function stepDay(dt){
 // ══════════════════════════════════════════════════════════════
 const keys={};
 const KEY_ALIAS={
-  w:'KeyW',a:'KeyA',s:'KeyS',d:'KeyD',t:'KeyT',
+  w:'KeyW',a:'KeyA',s:'KeyS',d:'KeyD',t:'KeyT',c:'KeyC',
   arrowup:'ArrowUp',arrowdown:'ArrowDown',arrowleft:'ArrowLeft',arrowright:'ArrowRight',
   ' ':'Space',spacebar:'Space',shift:'ShiftLeft',shiftleft:'ShiftLeft',shiftright:'ShiftRight',
   escape:'Escape',esc:'Escape','/':'Slash'
 };
-let paused=false, chatOpen=false;
+let paused=false, chatOpen=false, craftOpen=false;
 function keyName(e){
   return KEY_ALIAS[(e.key||'').toLowerCase()]||e.code;
 }
@@ -955,7 +1104,7 @@ function clearKeys(){
   updateMoveStatus();
 }
 function ensureGameFocus(){
-  if(chatOpen||paused) return;
+  if(chatOpen||paused||craftOpen) return;
   try{window.focus();}catch(e){}
   try{canvas.focus({preventScroll:true});}catch(e){}
 }
@@ -977,6 +1126,11 @@ function setGameKey(e,down){
     e.preventDefault();
     return;
   }
+  if(craftOpen){
+    if(down&&(keyName(e)==='Escape'||keyName(e)==='KeyC')) closeCrafting();
+    e.preventDefault();
+    return;
+  }
   const typing=/^(INPUT|TEXTAREA)$/.test(e.target?.tagName||'');
   if(typing){
     if(e.code==='Escape'&&chatOpen){toggleChat();e.preventDefault();e.stopPropagation();}
@@ -993,6 +1147,7 @@ function setGameKey(e,down){
   if(!down) return;
   if(code==='KeyE'&&!chatOpen){e.preventDefault();canEatSelected();}
   if((code==='KeyT'||code==='Slash')&&!chatOpen){e.preventDefault();toggleChat();}
+  if(code==='KeyC'&&!chatOpen){e.preventDefault();toggleCrafting();}
   if(code==='Escape'){
     if(chatOpen){toggleChat();return;}
     paused=!paused;
@@ -1014,7 +1169,7 @@ document.addEventListener('pointerdown',e=>{
 // Mouse drag look — only on game canvas, not UI
 let dragging=false,lx=0,ly=0,downX=0,downY=0,dragMoved=false;
 canvas.addEventListener('mousedown',e=>{
-  if(chatOpen||paused) return;
+  if(chatOpen||paused||craftOpen) return;
   canvas.focus({preventScroll:true});
   dragging=true; dragMoved=false;
   lx=downX=e.clientX; ly=downY=e.clientY;
@@ -1062,6 +1217,11 @@ canvas.addEventListener('contextmenu',e=>{
   const hits=ray.intersectObjects(rayObjects);
   if(hits.length){
     const h=hits[0],n=h.face.normal,ud=h.object.userData;
+    if(ud.type==='crafting_table'){
+      openCrafting(true);
+      flashStatus('CRAFTING TABLE');
+      return;
+    }
     const x=ud.x+Math.round(n.x),y=ud.y+Math.round(n.y),z=ud.z+Math.round(n.z);
     const type=HOTBAR[sel];
     if(intersectsPlayer(x,y,z)) return;
@@ -1114,21 +1274,23 @@ function startGame(creative=false){
   player.creative=creative;
   player.hp=20; player.hunger=20; player.dead=false;
   player.vel.set(0,0,0);
+  setHotbarForMode();
   generateWorld();
   player.pos.copy(spawnPos);
   player.yaw=Math.PI; player.pitch=-0.2;
   player.fallFromY=spawnPos.y;
-  dayT=60; dayN=1; paused=false; chatOpen=false;
+  dayT=60; dayN=1; paused=false; chatOpen=false; craftOpen=false;
   document.getElementById('pause').style.display='none';
   document.getElementById('dead').style.display='none';
   document.getElementById('chat').classList.remove('open');
+  document.getElementById('craft').classList.remove('open');
   document.getElementById('msgs').innerHTML='';
   resetInventory(); buildHotbar(); drawHUD();
   gameRunning=true;
   clock.start();
   addMsg('ai', creative
-    ? 'Minecraft Codex creative mode! Fly with SPACE/SHIFT, no fall damage or hunger.\n\nAsk Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
-    : 'Minecraft Codex survival mode! You spawned on solid land.\n\nWatch your health and hunger. Press T or / and ask Codex to build.');
+    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT and scroll or click the hotbar for every placeable block.\n\nOpen Codex to ask how fast you are going or what the incline is. Ask Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
+    : 'Minecraft Codex Edition survival mode! Craft a table from 4 planks, then right-click it for advanced recipes.\n\nOpen Codex to ask how fast you are going or what the incline is. Watch your health and hunger. Press T or / and ask Codex to build.');
 }
 window.startGame=startGame;
 function goMenu(){
@@ -1138,7 +1300,8 @@ function goMenu(){
   document.getElementById('menu').style.display='flex';
   document.getElementById('pause').style.display='none';
   document.getElementById('dead').style.display='none';
-  paused=false;
+  paused=false; craftOpen=false;
+  document.getElementById('craft').classList.remove('open');
 }
 window.goMenu=goMenu;
 function resumeGame(){paused=false;document.getElementById('pause').style.display='none';clearKeys();ensureGameFocus();}
@@ -1166,6 +1329,45 @@ function topY(x,z){
   x=Math.round(x);z=Math.round(z);
   for(let y=WORLD_TOP;y>=BEDROCK_Y;y--) if(solid(x,y,z)) return y;
   return getH(x,z);
+}
+function speedStats(){
+  const horizontal=Math.hypot(player.vel.x,player.vel.z);
+  const total=Math.hypot(horizontal,player.vel.y);
+  return {horizontal,total,vertical:player.vel.y,mph:horizontal*2.23694};
+}
+function inclineStats(){
+  const x=Math.round(player.pos.x),z=Math.round(player.pos.z);
+  const east=topY(x+1,z),west=topY(x-1,z),south=topY(x,z+1),north=topY(x,z-1);
+  const dx=(east-west)/2,dz=(south-north)/2;
+  const slope=Math.hypot(dx,dz);
+  const direction=Math.abs(dx)>Math.abs(dz)
+    ? (dx>=0?'east':'west')
+    : (dz>=0?'south':'north');
+  return {degrees:Math.atan(slope)*180/Math.PI,grade:slope*100,direction,slope};
+}
+function speedAnswer(){
+  const s=speedStats();
+  if(s.horizontal<.2&&Math.abs(s.vertical)<.2) return 'You are basically stopped. Speed is 0 blocks per second.';
+  let answer=`Your ground speed is ${s.horizontal.toFixed(1)} blocks per second, about ${s.mph.toFixed(1)} miles per hour.`;
+  if(Math.abs(s.vertical)>1) answer+=` Vertical speed is ${Math.abs(s.vertical).toFixed(1)} blocks per second ${s.vertical>0?'up':'down'}.`;
+  return answer;
+}
+function inclineAnswer(){
+  const s=inclineStats();
+  if(s.slope<.05) return 'The ground is basically flat here. Incline is 0 degrees.';
+  return `The incline is about ${s.degrees.toFixed(0)} degrees, ${s.grade.toFixed(0)} percent grade, rising toward ${s.direction}.`;
+}
+function answerStatusQuestion(text){
+  const q=(text||'').trim();
+  if(!q) return '';
+  const l=q.toLowerCase();
+  const asksSpeed=l.includes('how fast')||l.includes('speed')||l.includes('velocity')||l.includes('miles per hour')||l.includes('mph')||l.includes('moving');
+  const asksIncline=l.includes('incline')||l.includes('slope')||l.includes('grade')||l.includes('steep')||l.includes('angle');
+  if(!asksSpeed&&!asksIncline) return '';
+  const parts=[];
+  if(asksSpeed) parts.push(speedAnswer());
+  if(asksIncline) parts.push(inclineAnswer());
+  return parts.join(' ');
 }
 function buildSpot(w=12,d=12){
   const dist=10;
@@ -1264,23 +1466,73 @@ function clearBuildArea(){
   for(let x=s.x;x<s.x+16;x++)for(let z=s.z;z<s.z+16;z++)for(let y=s.y;y<s.y+16;y++)removeBlock(x,y,z);
   return 'Cleared a build area in front of you.';
 }
+function codexForwardStep(){
+  const sx=-Math.sin(player.yaw),sz=-Math.cos(player.yaw);
+  if(Math.abs(sx)>Math.abs(sz)) return {dx:Math.sign(sx)||1,dz:0};
+  return {dx:0,dz:Math.sign(sz)||-1};
+}
+function carveCodexRoom(cx,cy,cz,rx=3,ry=2,rz=3){
+  for(let dx=-rx;dx<=rx;dx++) for(let dy=-ry;dy<=ry;dy++) for(let dz=-rz;dz<=rz;dz++){
+    if((dx*dx)/(rx*rx)+(dy*dy)/(ry*ry)+(dz*dz)/(rz*rz)>1) continue;
+    const t=blockAt(cx+dx,cy+dy,cz+dz);
+    if(t&&t!=='bedrock') removeBlock(cx+dx,cy+dy,cz+dz);
+  }
+}
+function buildCave(){
+  const s=buildSpot(9,12),step=codexForwardStep(),x=s.cx,y=s.y,z=s.cz;
+  ensureChunksForBox(x-7,z-7,x+step.dx*14+7,z+step.dz*14+7);
+  for(let i=0;i<12;i++) carveCodexRoom(x+step.dx*i,y-1-Math.floor(i*.35),z+step.dz*i,3,2,3);
+  placeBlock(x,y,z,'gravel');
+  return 'Opened a cave entrance with a tunnel inside.';
+}
+function buildMine(){
+  const s=buildSpot(5,16),step=codexForwardStep(),side={dx:step.dz,dz:-step.dx},x=s.cx,y=s.y,z=s.cz;
+  ensureChunksForBox(x-6,z-6,x+step.dx*18+6,z+step.dz*18+6);
+  for(let i=0;i<16;i++){
+    const px=x+step.dx*i,pz=z+step.dz*i,py=y-1-Math.floor(i/2);
+    for(let w=-1;w<=1;w++) for(let h=0;h<=2;h++) removeBlock(px+side.dx*w,py+h,pz+side.dz*w);
+    placeBlock(px,py-1,pz,'cobble');
+    if(i%4===0) placeBlock(px,py+2,pz,'glowstone');
+  }
+  return 'Dug a lit descending mine tunnel.';
+}
+function buildStairs(){
+  const s=buildSpot(4,14),step=codexForwardStep(),x=s.cx,y=s.y,z=s.cz;
+  ensureChunksForBox(x-3,z-3,x+step.dx*13+3,z+step.dz*13+3);
+  for(let i=0;i<12;i++){
+    const px=x+step.dx*i,pz=z+step.dz*i,py=y+i;
+    placeBlock(px,py,pz,'cobble');
+    placeBlock(px,py-1,pz,'stone');
+  }
+  return 'Built a rising cobblestone staircase.';
+}
+function buildVillage(){
+  const s=buildSpot(24,22),x=s.x,y=s.y,z=s.z;
+  ensureChunksForBox(x,z,x+23,z+21);
+  hollowBox(x,y,z,8,3,7,'wood','plank','plank');addWindows(x,y,z,8,3,7);
+  hollowBox(x+13,y,z+1,8,3,7,'wood','plank','plank');addWindows(x+13,y,z+1,8,3,7);
+  hollowBox(x+5,y,z+13,9,3,7,'cobble','plank','plank');addWindows(x+5,y,z+13,9,3,7);
+  fillBox(x+9,y,z,x+11,y,z+20,'gravel');
+  fillBox(x,y,z+9,x+22,y,z+11,'gravel');
+  placeBlock(x+11,y+1,z+10,'glowstone');
+  return 'Built a small village with houses and paths.';
+}
 function runCodexBuild(msg){
   const q=msg.toLowerCase();
-  const has=(...terms)=>terms.some(t=>q.includes(t));
-  if(has('clear','reset','clean','remove','flatten')) return clearBuildArea();
-  if(has('castle','fort','fortress','keep')) return buildCastle();
-  if(has('tower','spire','watchtower')) return buildTower();
-  if(has('bridge','walkway','pier')) return buildBridge();
-  if(has('pyramid','temple','monument')) return buildPyramid();
-  if(has('tree','oak','pine','forest','woods')) return buildTree();
-  if(has('farm','garden','field','crops')) return buildFarm();
-  if(has('fountain','waterfall','pool')) return buildFountain();
-  if(has('house','home','base','cabin','hut','cottage','shack','building')) return buildHouse();
-  if(has('boat','ship','raft')){
-    buildBridge();
-    return 'Built a bridge-style dock area for a boat.';
-  }
-  return 'Sorry, I did not understand that. Try: castle, tower, bridge, pyramid, tree, farm, fountain, house, or clear.';
+  if(q.includes('clear')||q.includes('erase')) return clearBuildArea();
+  if(q.includes('village')||q.includes('town')) return buildVillage();
+  if(q.includes('mine')||q.includes('tunnel')||q.includes('dig')) return buildMine();
+  if(q.includes('cave')||q.includes('cavern')) return buildCave();
+  if(q.includes('stair')||q.includes('steps')) return buildStairs();
+  if(q.includes('castle')||q.includes('fort')) return buildCastle();
+  if(q.includes('tower')||q.includes('watch')) return buildTower();
+  if(q.includes('bridge')||q.includes('road')||q.includes('path')) return buildBridge();
+  if(q.includes('pyramid')||q.includes('temple')) return buildPyramid();
+  if(q.includes('tree')||q.includes('forest')) return buildTree();
+  if(q.includes('farm')||q.includes('garden')||q.includes('crop')) return buildFarm();
+  if(q.includes('fountain')||q.includes('water')) return buildFountain();
+  if(q.includes('house')||q.includes('home')||q.includes('base')||q.includes('hut')) return buildHouse();
+  return 'I can build: house, castle, tower, bridge, pyramid, tree, farm, fountain, cave, mine, stairs, village, or clear.';
 }
 async function sendToCodex(msg){
   const el=addMsg('th','Codex is building locally...');
@@ -1292,7 +1544,14 @@ async function sendToCodex(msg){
 }
 function doSend(){
   const p=document.getElementById('prompt');const v=p.value.trim();if(!v)return;
-  addMsg('me',v);p.value='';sendToCodex(v);
+  addMsg('me',v);p.value='';
+  const statusAnswer=answerStatusQuestion(v);
+  if(statusAnswer){
+    addMsg('ai',statusAnswer);
+    flashStatus(statusAnswer.length>58?statusAnswer.slice(0,55)+'...':statusAnswer);
+    return;
+  }
+  sendToCodex(v);
 }
 window.doSend=doSend;
 document.getElementById('prompt').addEventListener('keydown',e=>{
