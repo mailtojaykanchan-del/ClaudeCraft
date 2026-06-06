@@ -1,7 +1,7 @@
 {
   "name": "Minecraft Codex Edition",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "index_url": "https://mailtojaykanchan-del.github.io/ClaudeCraft/index.html",
-  "download_url": "https://mailtojaykanchan-del.github.io/ClaudeCraft/Minecraft-Codex-Edition-Drag-Install.dmg",
-  "notes": "Adds a real Mac app window, a custom app icon, and update-ready loading."
+  "download_url": "https://mailtojaykanchan-del.github.io/ClaudeCraft/Minecraft-Codex-Edition-Installer.pkg",
+  "notes": "Makes the Mac installer repair quarantine damage warnings after installing."
 }

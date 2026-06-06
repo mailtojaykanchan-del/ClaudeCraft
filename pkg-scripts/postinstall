@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+APP="/Applications/Minecraft Codex Edition.app"
+
+if [ -d "$APP" ]; then
+  /usr/bin/find "$APP" -name '._*' -delete 2>/dev/null || true
+  /bin/chmod +x "$APP/Contents/MacOS/MinecraftCodex" 2>/dev/null || true
+  /usr/bin/xattr -dr com.apple.quarantine "$APP" 2>/dev/null || true
+  /usr/bin/xattr -cr "$APP" 2>/dev/null || true
+  /usr/bin/codesign --force --deep --sign - "$APP" >/dev/null 2>&1 || true
+fi
+
+exit 0
