@@ -8,11 +8,11 @@ Open `index.html` in a browser. Keep `three.min.js` in the same folder.
 
 ## Mac App
 
-Download `Minecraft-Codex-Edition-Installer.pkg` for the safer Mac installer.
+Download `Minecraft-Codex-Edition-Drag-Install.dmg`, open it, then drag `Minecraft Codex Edition.app` to Applications.
 Double-click `Minecraft Codex Edition.app` to open the game in its own app window.
 You can also double-click `installers/Install Minecraft Codex Edition.command` to copy it into `/Applications`.
 If macOS says Apple cannot verify the app or installer, right-click it and choose Open once.
-If macOS says the app is damaged or incomplete, use the `.pkg` installer because it clears the quarantine flag after installing.
+If macOS says the app is damaged or incomplete, double-click `installers/Open Minecraft Codex Edition.command` to clear quarantine and open it.
 
 ## Updates
 
