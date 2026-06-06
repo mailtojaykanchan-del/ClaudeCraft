@@ -38,5 +38,6 @@ When publishing a new update, upload `index.html`, `version.json`, and any chang
 - Block breaking and survival inventory counts
 - Crafting recipes and crafting tables
 - Creative mode includes every placeable block
+- Hands-free voice answers for speed and incline
 - Local no-sign-in Codex builder commands
 - Trees, caves, ores, rivers, and biomes

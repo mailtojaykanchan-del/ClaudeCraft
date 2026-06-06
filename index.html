@@ -173,7 +173,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
       <a id="downloadAppBtn" class="menu-btn" href="Minecraft-Codex-Edition-Drag-Install.dmg" download="Minecraft-Codex-Edition-Drag-Install.dmg">APP</a>
     </div>
   </div>
-  <div id="menu-version">Minecraft Codex Edition v1.1.3 · no sign-in</div>
+  <div id="menu-version">Minecraft Codex Edition v1.1.4 · no sign-in</div>
 </div>
 
 <div id="dressing">
@@ -211,7 +211,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
     <div class="barrow" id="hgrow"></div>
   </div>
   <div id="hotbar"></div>
-  <div id="hint">WASD — move &nbsp; SPACE — jump<br>Click — break &nbsp; Right-click — place/use<br>C — craft &nbsp; Scroll/click — blocks<br>E — eat food &nbsp; T or / — Codex</div>
+  <div id="hint">WASD — move &nbsp; SPACE — jump<br>Click — break &nbsp; Right-click — place/use<br>C — craft &nbsp; Scroll/click — blocks<br>E — eat food &nbsp; T or / — Codex<br>Ask aloud — speed or incline</div>
   <div id="movePad">
     <span class="movePad-spacer"></span><button class="w" type="button" data-key="KeyW">W</button><span class="movePad-spacer"></span>
     <button type="button" data-key="KeyA">A</button><button type="button" data-key="KeyS">S</button><button type="button" data-key="KeyD">D</button>
@@ -1288,13 +1288,15 @@ function startGame(creative=false){
   resetInventory(); buildHotbar(); drawHUD();
   gameRunning=true;
   clock.start();
+  startHandsFreeVoice();
   addMsg('ai', creative
-    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT and scroll or click the hotbar for every placeable block.\n\nAsk Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
-    : 'Minecraft Codex Edition survival mode! Craft a table from 4 planks, then right-click it for advanced recipes.\n\nWatch your health and hunger. Press T or / and ask Codex to build.');
+    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT and scroll or click the hotbar for every placeable block.\n\nAsk out loud how fast you are going or what the incline is. Ask Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
+    : 'Minecraft Codex Edition survival mode! Craft a table from 4 planks, then right-click it for advanced recipes.\n\nAsk out loud how fast you are going or what the incline is. Watch your health and hunger. Press T or / and ask Codex to build.');
 }
 window.startGame=startGame;
 function goMenu(){
   gameRunning=false;
+  stopHandsFreeVoice();
   clearKeys();
   document.getElementById('game').style.display='none';
   document.getElementById('menu').style.display='flex';
@@ -1329,6 +1331,116 @@ function topY(x,z){
   x=Math.round(x);z=Math.round(z);
   for(let y=WORLD_TOP;y>=BEDROCK_Y;y--) if(solid(x,y,z)) return y;
   return getH(x,z);
+}
+function speedStats(){
+  const horizontal=Math.hypot(player.vel.x,player.vel.z);
+  const total=Math.hypot(horizontal,player.vel.y);
+  return {horizontal,total,vertical:player.vel.y,mph:horizontal*2.23694};
+}
+function inclineStats(){
+  const x=Math.round(player.pos.x),z=Math.round(player.pos.z);
+  const east=topY(x+1,z),west=topY(x-1,z),south=topY(x,z+1),north=topY(x,z-1);
+  const dx=(east-west)/2,dz=(south-north)/2;
+  const slope=Math.hypot(dx,dz);
+  const direction=Math.abs(dx)>Math.abs(dz)
+    ? (dx>=0?'east':'west')
+    : (dz>=0?'south':'north');
+  return {degrees:Math.atan(slope)*180/Math.PI,grade:slope*100,direction,slope};
+}
+function speedAnswer(){
+  const s=speedStats();
+  if(s.horizontal<.2&&Math.abs(s.vertical)<.2) return 'You are basically stopped. Speed is 0 blocks per second.';
+  let answer=`Your ground speed is ${s.horizontal.toFixed(1)} blocks per second, about ${s.mph.toFixed(1)} miles per hour.`;
+  if(Math.abs(s.vertical)>1) answer+=` Vertical speed is ${Math.abs(s.vertical).toFixed(1)} blocks per second ${s.vertical>0?'up':'down'}.`;
+  return answer;
+}
+function inclineAnswer(){
+  const s=inclineStats();
+  if(s.slope<.05) return 'The ground is basically flat here. Incline is 0 degrees.';
+  return `The incline is about ${s.degrees.toFixed(0)} degrees, ${s.grade.toFixed(0)} percent grade, rising toward ${s.direction}.`;
+}
+function answerHandsFreeQuestion(text){
+  const q=(text||'').trim();
+  if(!q) return false;
+  const l=q.toLowerCase();
+  const asksSpeed=l.includes('how fast')||l.includes('speed')||l.includes('velocity')||l.includes('miles per hour')||l.includes('mph')||l.includes('moving');
+  const asksIncline=l.includes('incline')||l.includes('slope')||l.includes('grade')||l.includes('steep')||l.includes('angle');
+  if(!asksSpeed&&!asksIncline) return false;
+  const parts=[];
+  if(asksSpeed) parts.push(speedAnswer());
+  if(asksIncline) parts.push(inclineAnswer());
+  const answer=parts.join(' ');
+  addMsg('me',q);
+  addMsg('ai',answer);
+  flashStatus(answer.length>58?answer.slice(0,55)+'...':answer);
+  speakHandsFree(answer);
+  return true;
+}
+let voiceRec=null,voiceEnabled=false,voiceRestartTimer=0,voiceNoticeShown=false,voiceSpeaking=false;
+function speakHandsFree(text){
+  if(!('speechSynthesis' in window)) return;
+  try{
+    voiceSpeaking=true;
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='en-US';
+    u.rate=1;
+    u.onend=()=>{voiceSpeaking=false;};
+    u.onerror=()=>{voiceSpeaking=false;};
+    window.speechSynthesis.speak(u);
+  }catch(e){
+    voiceSpeaking=false;
+  }
+}
+function startHandsFreeVoice(){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    if(!voiceNoticeShown){voiceNoticeShown=true;flashStatus('VOICE NOT SUPPORTED');}
+    return;
+  }
+  voiceEnabled=true;
+  if(voiceRec) return;
+  try{
+    const rec=new SpeechRecognition();
+    voiceRec=rec;
+    rec.lang='en-US';
+    rec.continuous=true;
+    rec.interimResults=false;
+    rec.maxAlternatives=1;
+    rec.onresult=e=>{
+      if(voiceSpeaking) return;
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const result=e.results[i];
+        if(result.isFinal&&result[0]) answerHandsFreeQuestion(result[0].transcript);
+      }
+    };
+    rec.onerror=e=>{
+      if(e.error==='not-allowed'||e.error==='service-not-allowed'){
+        voiceEnabled=false;
+        flashStatus('MIC BLOCKED');
+      }
+    };
+    rec.onend=()=>{
+      voiceRec=null;
+      clearTimeout(voiceRestartTimer);
+      if(voiceEnabled&&gameRunning&&!player.dead) voiceRestartTimer=setTimeout(startHandsFreeVoice,700);
+    };
+    rec.start();
+    flashStatus('VOICE READY');
+  }catch(e){
+    voiceRec=null;
+    if(!voiceNoticeShown){voiceNoticeShown=true;flashStatus('VOICE NEEDS PERMISSION');}
+  }
+}
+function stopHandsFreeVoice(){
+  voiceEnabled=false;
+  clearTimeout(voiceRestartTimer);
+  if(voiceRec){
+    try{voiceRec.onend=null;voiceRec.stop();}catch(e){}
+    voiceRec=null;
+  }
+  voiceSpeaking=false;
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
 }
 function buildSpot(w=12,d=12){
   const dist=10;
