@@ -36,6 +36,7 @@ When publishing a new update, upload `index.html`, `version.json`, and any chang
 - Survival and creative modes
 - Infinite chunk loading
 - Block breaking and survival inventory counts
-- Crafting recipes
+- Crafting recipes and crafting tables
+- Creative mode includes every placeable block
 - Local no-sign-in Codex builder commands
 - Trees, caves, ores, rivers, and biomes

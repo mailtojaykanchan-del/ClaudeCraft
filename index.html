@@ -173,7 +173,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
       <a id="downloadAppBtn" class="menu-btn" href="Minecraft-Codex-Edition-Drag-Install.dmg" download="Minecraft-Codex-Edition-Drag-Install.dmg">APP</a>
     </div>
   </div>
-  <div id="menu-version">Minecraft Codex Edition v1.1.2 · no sign-in</div>
+  <div id="menu-version">Minecraft Codex Edition v1.1.3 · no sign-in</div>
 </div>
 
 <div id="dressing">
@@ -211,7 +211,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
     <div class="barrow" id="hgrow"></div>
   </div>
   <div id="hotbar"></div>
-  <div id="hint">WASD — move &nbsp; SPACE — jump<br>Drag mouse — look around<br>Click — break block<br>Right-click — place collected block<br>C — craft &nbsp; Scroll — change block<br>E — eat food &nbsp; T or / — Codex</div>
+  <div id="hint">WASD — move &nbsp; SPACE — jump<br>Click — break &nbsp; Right-click — place/use<br>C — craft &nbsp; Scroll/click — blocks<br>E — eat food &nbsp; T or / — Codex</div>
   <div id="movePad">
     <span class="movePad-spacer"></span><button class="w" type="button" data-key="KeyW">W</button><span class="movePad-spacer"></span>
     <button type="button" data-key="KeyA">A</button><button type="button" data-key="KeyS">S</button><button type="button" data-key="KeyD">D</button>
@@ -357,6 +357,8 @@ const BD = {
   iron:     {t:'#d8b38a',s:'#b98962',b:'#d8b38a'},
   wood:     {t:'#bcaaa4',s:'#795548',b:'#bcaaa4'},
   plank:    {t:'#FFCC80',s:'#FFCC80',b:'#FFCC80'},
+  crafting_table:{t:'#B98247',s:'#7B4A24',b:'#5D3218'},
+  furnace:  {t:'#777777',s:'#5f5f5f',b:'#3f3f3f'},
   leaves:   {t:'#2E7D32',s:'#388E3C',b:'#2E7D32',tr:1,op:.88},
   glass:    {t:'#B3E5FC',s:'#B3E5FC',b:'#B3E5FC',tr:1,op:.35},
   sand:     {t:'#FFF176',s:'#F9A825',b:'#FFF176'},
@@ -374,8 +376,10 @@ const BD = {
   apple:    {t:'#D32F2F',s:'#B71C1C',b:'#D32F2F'},
   bread:    {t:'#F9A825',s:'#E65100',b:'#F9A825'}
 };
-const HOTBAR = ['grass','dirt','stone','cobble','coal','iron','wood','plank','glass','sand','lava','diamond','brick','glowstone','gold','obsidian','snow','cactus','apple','bread'];
-const LABELS = {grass:'Grass',dirt:'Dirt',stone:'Stone',cobble:'Cobble',coal:'Coal',iron:'Iron',wood:'Wood',plank:'Plank',glass:'Glass',sand:'Sand',lava:'Lava',diamond:'Diamond',brick:'Brick',glowstone:'Glow',gold:'Gold',obsidian:'Void',snow:'Snow',cactus:'Cactus',apple:'Apple',bread:'Bread'};
+const SURVIVAL_HOTBAR = ['grass','dirt','stone','cobble','coal','iron','wood','plank','crafting_table','furnace','glass','sand','lava','diamond','brick','glowstone','gold','obsidian','snow','cactus','apple','bread'];
+const CREATIVE_HOTBAR = ['grass','dirt','stone','cobble','coal','iron','wood','plank','crafting_table','furnace','leaves','glass','sand','water','lava','gravel','snow','diamond','gold','cactus','brick','obsidian','glowstone','bedrock'];
+let HOTBAR = SURVIVAL_HOTBAR.slice();
+const LABELS = {grass:'Grass',dirt:'Dirt',stone:'Stone',cobble:'Cobble',coal:'Coal',iron:'Iron',wood:'Wood',plank:'Plank',crafting_table:'Table',furnace:'Furnace',leaves:'Leaves',glass:'Glass',sand:'Sand',water:'Water',lava:'Lava',gravel:'Gravel',diamond:'Diamond',brick:'Brick',glowstone:'Glow',gold:'Gold',obsidian:'Void',bedrock:'Bedrock',snow:'Snow',cactus:'Cactus',apple:'Apple',bread:'Bread'};
 const FOOD_ITEMS = {apple:{hp:2,hunger:5},bread:{hp:3,hunger:8}};
 
 // ══════════════════════════════════════════════════════════════
@@ -886,6 +890,10 @@ function drawHUD(){
 // ══════════════════════════════════════════════════════════════
 let sel=0;
 let inventory={};
+function setHotbarForMode(){
+  HOTBAR=(player.creative?CREATIVE_HOTBAR:SURVIVAL_HOTBAR).slice();
+  sel=0;
+}
 function resetInventory(){
   inventory={};
   HOTBAR.forEach(type=>inventory[type]=0);
@@ -970,39 +978,56 @@ function buildHotbar(){
 
 const RECIPES=[
   {out:'plank',count:4,in:{wood:1},name:'Planks'},
+  {out:'crafting_table',count:1,in:{plank:4},name:'Crafting Table'},
   {out:'wood',count:1,in:{plank:4},name:'Wood Block'},
   {out:'cobble',count:1,in:{stone:1},name:'Cobblestone'},
-  {out:'brick',count:2,in:{cobble:2,coal:1},name:'Bricks'},
-  {out:'glass',count:2,in:{sand:2,coal:1},name:'Glass'},
-  {out:'glowstone',count:1,in:{glass:2,gold:1},name:'Glowstone'},
-  {out:'obsidian',count:1,in:{lava:1,stone:2},name:'Obsidian'}
+  {out:'furnace',count:1,in:{cobble:8},name:'Furnace',table:true},
+  {out:'brick',count:2,in:{cobble:2,coal:1},name:'Bricks',table:true},
+  {out:'glass',count:2,in:{sand:2,coal:1},name:'Glass',table:true},
+  {out:'glowstone',count:1,in:{glass:2,gold:1},name:'Glowstone',table:true},
+  {out:'obsidian',count:1,in:{lava:1,stone:2},name:'Obsidian',table:true}
 ];
 function itemName(type){return LABELS[type]||type;}
 function formatReq(req){return Object.entries(req).map(([t,n])=>n+' '+itemName(t)).join(', ');}
 function hasItems(req){return player.creative||Object.entries(req).every(([t,n])=>(inventory[t]||0)>=n);}
+function nearCraftingTable(){
+  const px=Math.round(player.pos.x),py=Math.round(player.pos.y),pz=Math.round(player.pos.z);
+  for(let x=px-2;x<=px+2;x++) for(let y=py-1;y<=py+1;y++) for(let z=pz-2;z<=pz+2;z++){
+    if(blockAt(x,y,z)==='crafting_table') return true;
+  }
+  return false;
+}
 function addCrafted(type,count){
   if(!HOTBAR.includes(type)) return;
   inventory[type]=(inventory[type]||0)+count;
   updateHotbarCounts();
 }
+let usingCraftingTable=false;
 function drawCrafting(){
   const list=document.getElementById('craftList');
   if(!list) return;
   list.innerHTML='';
   RECIPES.forEach((r,i)=>{
-    const can=hasItems(r.in);
+    const tableOk=player.creative||!r.table||usingCraftingTable;
+    const can=tableOk&&hasItems(r.in);
     const b=document.createElement('button');
     b.type='button';
     b.className='craft-recipe';
-    b.disabled=!can&&!player.creative;
+    b.disabled=!can;
     b.onclick=()=>craftRecipe(i);
-    b.innerHTML='<div class="craft-title">'+r.count+' '+r.name+'</div><div class="craft-cost">'+formatReq(r.in)+'</div>';
+    const need=r.table&&!tableOk?'Needs crafting table<br>':'';
+    b.innerHTML='<div class="craft-title">'+r.count+' '+r.name+'</div><div class="craft-cost">'+need+formatReq(r.in)+'</div>';
     list.appendChild(b);
   });
+  const note=document.getElementById('craft-note');
+  if(note) note.textContent=usingCraftingTable||player.creative
+    ? 'Crafting table open. Advanced recipes are available.'
+    : 'Basic crafting. Craft and place a crafting table for advanced recipes.';
 }
 function craftRecipe(i){
   const r=RECIPES[i];
   if(!r) return;
+  if(!player.creative&&r.table&&!usingCraftingTable){flashStatus('NEED CRAFTING TABLE');drawCrafting();return;}
   if(!player.creative&&!hasItems(r.in)){flashStatus('NEED '+formatReq(r.in).toUpperCase());drawCrafting();return;}
   if(!player.creative){
     Object.entries(r.in).forEach(([t,n])=>inventory[t]=(inventory[t]||0)-n);
@@ -1011,15 +1036,17 @@ function craftRecipe(i){
   flashStatus('CRAFTED '+r.count+' '+itemName(r.out).toUpperCase());
   drawCrafting();
 }
-function openCrafting(){
+function openCrafting(fromTable=false){
   if(chatOpen||paused||player.dead) return;
   craftOpen=true;
+  usingCraftingTable=!!fromTable||player.creative||nearCraftingTable();
   clearKeys();
   drawCrafting();
   document.getElementById('craft').classList.add('open');
 }
 function closeCrafting(){
   craftOpen=false;
+  usingCraftingTable=false;
   document.getElementById('craft').classList.remove('open');
   ensureGameFocus();
 }
@@ -1190,6 +1217,11 @@ canvas.addEventListener('contextmenu',e=>{
   const hits=ray.intersectObjects(rayObjects);
   if(hits.length){
     const h=hits[0],n=h.face.normal,ud=h.object.userData;
+    if(ud.type==='crafting_table'){
+      openCrafting(true);
+      flashStatus('CRAFTING TABLE');
+      return;
+    }
     const x=ud.x+Math.round(n.x),y=ud.y+Math.round(n.y),z=ud.z+Math.round(n.z);
     const type=HOTBAR[sel];
     if(intersectsPlayer(x,y,z)) return;
@@ -1242,6 +1274,7 @@ function startGame(creative=false){
   player.creative=creative;
   player.hp=20; player.hunger=20; player.dead=false;
   player.vel.set(0,0,0);
+  setHotbarForMode();
   generateWorld();
   player.pos.copy(spawnPos);
   player.yaw=Math.PI; player.pitch=-0.2;
@@ -1256,8 +1289,8 @@ function startGame(creative=false){
   gameRunning=true;
   clock.start();
   addMsg('ai', creative
-    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT, no fall damage or hunger.\n\nAsk Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
-    : 'Minecraft Codex Edition survival mode! You spawned on solid land.\n\nWatch your health and hunger. Press T or / and ask Codex to build.');
+    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT and scroll or click the hotbar for every placeable block.\n\nAsk Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
+    : 'Minecraft Codex Edition survival mode! Craft a table from 4 planks, then right-click it for advanced recipes.\n\nWatch your health and hunger. Press T or / and ask Codex to build.');
 }
 window.startGame=startGame;
 function goMenu(){
