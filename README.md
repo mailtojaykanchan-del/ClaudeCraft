@@ -14,6 +14,12 @@ Double-click `Minecraft Codex Edition.app` to open the game in its own app windo
 You can also double-click `installers/Install Minecraft Codex Edition.command` to copy it into `/Applications`.
 If macOS says Apple cannot verify the app or installer, right-click it and choose Open once.
 
+## Updates
+
+The app opens its bundled game first, then checks `version.json` on GitHub Pages.
+If `version.json` has a newer version, the app loads the newer game page inside the same app window.
+When publishing a new update, upload `index.html`, `version.json`, and any changed download files to GitHub Pages.
+
 ## Controls
 
 - `WASD` move

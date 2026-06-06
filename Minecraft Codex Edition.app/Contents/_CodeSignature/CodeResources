@@ -4,9 +4,13 @@
 <dict>
 	<key>files</key>
 	<dict>
+		<key>Resources/AppIcon.icns</key>
+		<data>
+		LtxbCoxhBok94UVZsy+eUYyh1GA=
+		</data>
 		<key>Resources/index.html</key>
 		<data>
-		8TD2HgIzKK+kDfGOd+iGdQT6vec=
+		RvxKnJZ9QLohkMuovoOgIknGbJk=
 		</data>
 		<key>Resources/three.min.js</key>
 		<data>
@@ -15,11 +19,18 @@
 	</dict>
 	<key>files2</key>
 	<dict>
+		<key>Resources/AppIcon.icns</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			EjEVLIwTh9OGS+azN9ivSsg4HThz0ApzUhTxnjkRQ68=
+			</data>
+		</dict>
 		<key>Resources/index.html</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			YeZWoJcKirKOXbWqTeU5K8eB7yLVkCuj0C/Gvznn388=
+			pl3cBZSGI14cd8wA978+egEQHsbSMWy1YKt94umBXCs=
 			</data>
 		</dict>
 		<key>Resources/three.min.js</key>
