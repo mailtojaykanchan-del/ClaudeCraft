@@ -38,6 +38,7 @@ When publishing a new update, upload `index.html`, `version.json`, and any chang
 - Block breaking and survival inventory counts
 - Crafting recipes and crafting tables
 - Creative mode includes every placeable block
+- Username, friends list, and shared world-code lobby
 - Codex chat answers for speed and incline
 - Local no-sign-in Codex builder commands
 - Trees, caves, ores, rivers, and biomes

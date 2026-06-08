@@ -47,6 +47,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 #dress-actions{display:flex;gap:8px;margin-top:14px}
 #dress-actions .menu-btn{width:auto;flex:1;margin:0;padding:11px 0;font-size:12px}
 
+/* Multiplayer */
+#multiplayer{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.72);pointer-events:all}
+#multi-panel{width:min(540px,calc(100vw - 28px));max-height:calc(100vh - 28px);overflow:auto;background:#c6c6c6;border:4px solid #000;border-top-color:#fff;border-left-color:#fff;border-right-color:#555;border-bottom-color:#555;border-radius:0;padding:18px;color:#222;text-shadow:none;box-shadow:0 18px 60px rgba(0,0,0,0.55)}
+#multi-panel h2{color:#333;font-size:18px;letter-spacing:2px;margin-bottom:14px;text-align:center;text-shadow:1px 1px 0 #fff}
+.multi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.multi-section{background:#b8b8b8;border:3px solid #000;border-top-color:#e7e7e7;border-left-color:#e7e7e7;border-right-color:#666;border-bottom-color:#666;padding:10px}
+.multi-section.wide{grid-column:1/-1}
+.multi-section label,.multi-section h3{display:block;color:#333;font:bold 10px 'Courier New';letter-spacing:1px;margin-bottom:6px;text-shadow:1px 1px 0 #fff}
+.multi-row{display:flex;gap:7px;align-items:center}
+.multi-row input{min-width:0;flex:1;background:#2b2b2b;border:3px solid #000;border-top-color:#555;border-left-color:#555;color:#fff;font:12px 'Courier New';padding:8px;border-radius:0;outline:none;text-shadow:none;text-transform:uppercase}
+#usernameInput{text-transform:none}
+#friendInput{text-transform:none}
+.multi-row .menu-btn{width:auto;min-width:82px;margin:0;padding:9px 10px;font-size:10px;box-shadow:none}
+#friendList{display:flex;flex-wrap:wrap;gap:6px;min-height:34px}
+.friend-chip{display:flex;align-items:center;gap:6px;background:#4d7d3a;color:#fff;border:3px solid #000;border-top-color:#9ed179;border-left-color:#9ed179;padding:5px 7px;font:bold 11px 'Courier New';text-shadow:1px 1px 0 #000}
+.friend-chip button{background:#333;color:#fff;border:2px solid #000;border-top-color:#aaa;border-left-color:#aaa;font:bold 10px 'Courier New';line-height:1;padding:1px 4px;cursor:pointer}
+#multiStatus{min-height:18px;margin-top:10px;color:#275a24;font:bold 11px 'Courier New';text-align:center;text-shadow:1px 1px 0 #fff}
+#multi-actions{display:flex;gap:8px;margin-top:14px}
+#multi-actions .menu-btn{width:auto;flex:1;margin:0;padding:11px 0;font-size:12px}
+@media (max-width:620px){.multi-grid{grid-template-columns:1fr}#multi-panel{padding:14px}.multi-section.wide{grid-column:auto}}
+@media (max-height:720px){#menu-title{margin-bottom:18px}.menu-btn{padding:10px 0;margin:4px 0}#download-section{margin-top:5px}}
+
 /* ── GAME ──────────────────────────────────────── */
 #game{position:fixed;inset:0;display:none}
 #gc{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none}
@@ -61,6 +83,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 #tophud{position:absolute;top:0;left:0;right:0;padding:8px 14px;display:flex;align-items:center;gap:10px;pointer-events:none;background:linear-gradient(rgba(0,0,0,0.45),transparent)}
 #logo{color:#5DCAA5;font-size:13px;font-weight:bold;letter-spacing:2px}
 #survbadge{background:#6b6b6b;color:#fff;font-size:9px;padding:3px 8px;border:2px solid #000;border-top-color:#ccc;border-left-color:#ccc;border-radius:0;letter-spacing:1px;font-weight:bold}
+#namebadge,#worldbadge{background:#303030;color:#ffffa0;font-size:9px;padding:3px 8px;border:2px solid #000;border-top-color:#777;border-left-color:#777;border-radius:0;letter-spacing:1px;font-weight:bold}
 #skinbadge{width:18px;height:18px;border:3px solid #000;border-top-color:#ccc;border-left-color:#ccc;background:linear-gradient(180deg,var(--skin) 0 35%,var(--shirt) 35% 70%,var(--pants) 70%);border-radius:0}
 #tcoords{margin-left:auto;color:rgba(255,255,255,0.6);font-size:11px;text-align:right;line-height:1.7}
 
@@ -113,7 +136,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 #msgs{flex:1;overflow-y:auto;padding:8px 10px;background:rgba(0,0,0,0.38);display:flex;flex-direction:column;gap:3px;scrollbar-width:thin;scrollbar-color:#aaa transparent}
 .m{font-size:13px;line-height:1.35;padding:0;max-width:96%;white-space:pre-wrap;color:#fff}
 .m.ai::before{content:'Codex: ';color:#55ff55}
-.m.me::before{content:'You: ';color:#aaa}
+.m.me::before{content:attr(data-name) ': ';color:#aaa}
 .m.th{color:#ffffa0;font-style:italic;font-size:12px}
 .m.er{color:#ff5555}
 #inprow{padding:0;margin-top:6px;display:flex;gap:0;flex-shrink:0;background:rgba(0,0,0,0.65);border:3px solid #000;border-top-color:#555;border-left-color:#555}
@@ -163,6 +186,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   </div>
   <button id="playSurvival" class="menu-btn primary" type="button">▶ PLAY SURVIVAL</button>
   <button id="playCreative" class="menu-btn" type="button">⚡ CREATIVE MODE</button>
+  <button id="showMultiplayerBtn" class="menu-btn" type="button">☷ MULTIPLAYER</button>
   <button id="showDressingBtn" class="menu-btn" type="button">▣ DRESSING ROOM</button>
   <button id="showControlsBtn" class="menu-btn" type="button">⌨ CONTROLS</button>
   <div id="download-section">
@@ -173,7 +197,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
       <a id="downloadAppBtn" class="menu-btn" href="Minecraft-Codex-Edition-Drag-Install.dmg" download="Minecraft-Codex-Edition-Drag-Install.dmg">APP</a>
     </div>
   </div>
-  <div id="menu-version">Minecraft Codex Edition v1.1.5 · no sign-in</div>
+  <div id="menu-version">Minecraft Codex Edition v1.1.6 · no sign-in</div>
 </div>
 
 <div id="dressing">
@@ -195,6 +219,47 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   </div>
 </div>
 
+<div id="multiplayer">
+  <div id="multi-panel">
+    <h2>MULTIPLAYER</h2>
+    <div class="multi-grid">
+      <div class="multi-section">
+        <label for="usernameInput">USERNAME</label>
+        <div class="multi-row">
+          <input id="usernameInput" maxlength="16" autocomplete="off" spellcheck="false">
+          <button id="saveUsernameBtn" class="menu-btn" type="button">SAVE</button>
+        </div>
+      </div>
+      <div class="multi-section">
+        <label for="worldCodeInput">WORLD CODE</label>
+        <div class="multi-row">
+          <input id="worldCodeInput" maxlength="8" autocomplete="off" spellcheck="false">
+          <button id="joinWorldBtn" class="menu-btn" type="button">JOIN</button>
+        </div>
+      </div>
+      <div class="multi-section wide">
+        <h3>FRIENDS</h3>
+        <div class="multi-row">
+          <input id="friendInput" maxlength="16" autocomplete="off" spellcheck="false">
+          <button id="addFriendBtn" class="menu-btn" type="button">ADD</button>
+        </div>
+        <div id="friendList"></div>
+      </div>
+      <div class="multi-section wide">
+        <div class="multi-row">
+          <button id="createWorldBtn" class="menu-btn" type="button">NEW CODE</button>
+          <button id="copyInviteBtn" class="menu-btn" type="button">COPY INVITE</button>
+          <button id="playWorldBtn" class="menu-btn primary" type="button">PLAY WORLD</button>
+        </div>
+      </div>
+    </div>
+    <div id="multiStatus"></div>
+    <div id="multi-actions">
+      <button id="closeMultiplayerBtn" class="menu-btn" type="button">BACK</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ GAME ════════════════════════════════════════════════════ -->
 <div id="game">
   <canvas id="gc" tabindex="0"></canvas>
@@ -203,6 +268,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
   <div id="tophud">
     <span id="logo">⬛ MINECRAFT CODEX EDITION</span>
     <span id="survbadge">SURVIVAL</span>
+    <span id="namebadge">PLAYER</span>
+    <span id="worldbadge">SOLO</span>
     <span id="skinbadge"></span>
     <div id="tcoords">X:0 Y:0 Z:0<br><span id="daytxt">Day 1</span></div>
   </div>
@@ -337,6 +404,170 @@ function saveDressingRoom(){
 }
 window.openDressingRoom=openDressingRoom;
 window.closeDressingRoom=closeDressingRoom;
+
+const PLAYER_KEY='cc_player_name';
+const FRIENDS_KEY='cc_friends';
+let activeWorldCode='SOLO';
+let worldSeed=0;
+let playerName=loadPlayerName();
+let friends=loadFriends();
+
+function cleanName(name){
+  return (name||'').replace(/[^a-z0-9 _-]/gi,'').trim().slice(0,16);
+}
+function cleanWorldCode(code){
+  return (code||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
+}
+function randomWorldCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code='';
+  for(let i=0;i<6;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+function seedFromString(text){
+  let h=2166136261;
+  for(let i=0;i<text.length;i++){
+    h^=text.charCodeAt(i);
+    h=Math.imul(h,16777619)>>>0;
+  }
+  return h>>>0;
+}
+function loadPlayerName(){
+  try{
+    const saved=cleanName(localStorage.getItem(PLAYER_KEY));
+    if(saved) return saved;
+  }catch(e){}
+  const generated='Player'+Math.floor(1000+Math.random()*9000);
+  try{localStorage.setItem(PLAYER_KEY,generated);}catch(e){}
+  return generated;
+}
+function loadFriends(){
+  try{
+    const names=JSON.parse(localStorage.getItem(FRIENDS_KEY)||'[]');
+    if(Array.isArray(names)) return names.map(cleanName).filter(Boolean).slice(0,24);
+  }catch(e){}
+  return [];
+}
+function saveFriends(){
+  try{localStorage.setItem(FRIENDS_KEY,JSON.stringify(friends));}catch(e){}
+}
+function updateProfileBadges(){
+  const nameEl=document.getElementById('namebadge');
+  const worldEl=document.getElementById('worldbadge');
+  if(nameEl) nameEl.textContent=playerName.toUpperCase();
+  if(worldEl) worldEl.textContent=activeWorldCode==='SOLO'?'SOLO':'WORLD '+activeWorldCode;
+}
+function setActiveWorldCode(code){
+  activeWorldCode=cleanWorldCode(code)||'SOLO';
+  worldSeed=activeWorldCode==='SOLO'?0:seedFromString(activeWorldCode);
+  const input=document.getElementById('worldCodeInput');
+  if(input) input.value=activeWorldCode==='SOLO'?'':activeWorldCode;
+  updateProfileBadges();
+}
+function setMultiStatus(text){
+  const el=document.getElementById('multiStatus');
+  if(el) el.textContent=text||'';
+}
+function drawFriends(){
+  const list=document.getElementById('friendList');
+  if(!list) return;
+  list.innerHTML='';
+  friends.forEach(name=>{
+    const chip=document.createElement('div');
+    chip.className='friend-chip';
+    const label=document.createElement('span');
+    label.textContent=name;
+    const remove=document.createElement('button');
+    remove.type='button';
+    remove.textContent='X';
+    remove.addEventListener('click',()=>removeFriend(name));
+    chip.appendChild(label);
+    chip.appendChild(remove);
+    list.appendChild(chip);
+  });
+}
+function openMultiplayer(){
+  document.getElementById('usernameInput').value=playerName;
+  document.getElementById('friendInput').value='';
+  document.getElementById('worldCodeInput').value=activeWorldCode==='SOLO'?'':activeWorldCode;
+  drawFriends();
+  setMultiStatus('');
+  document.getElementById('multiplayer').style.display='flex';
+}
+function closeMultiplayer(){
+  document.getElementById('multiplayer').style.display='none';
+}
+function saveUsername(){
+  const input=document.getElementById('usernameInput');
+  const name=cleanName(input.value)||loadPlayerName();
+  playerName=name;
+  input.value=playerName;
+  try{localStorage.setItem(PLAYER_KEY,playerName);}catch(e){}
+  updateProfileBadges();
+  setMultiStatus('SAVED '+playerName.toUpperCase());
+}
+function addFriend(){
+  const input=document.getElementById('friendInput');
+  const name=cleanName(input.value);
+  if(!name){setMultiStatus('TYPE A FRIEND NAME');return;}
+  if(name.toLowerCase()===playerName.toLowerCase()){setMultiStatus('THAT IS YOU');return;}
+  if(!friends.some(f=>f.toLowerCase()===name.toLowerCase())) friends.push(name);
+  input.value='';
+  saveFriends();
+  drawFriends();
+  setMultiStatus('ADDED '+name.toUpperCase());
+}
+function removeFriend(name){
+  friends=friends.filter(f=>f.toLowerCase()!==name.toLowerCase());
+  saveFriends();
+  drawFriends();
+  setMultiStatus('REMOVED '+name.toUpperCase());
+}
+function createWorldCode(){
+  setActiveWorldCode(randomWorldCode());
+  setMultiStatus('WORLD '+activeWorldCode+' READY');
+}
+function joinWorldFromMenu(){
+  const code=cleanWorldCode(document.getElementById('worldCodeInput').value);
+  if(!code){setMultiStatus('TYPE A WORLD CODE');return;}
+  setActiveWorldCode(code);
+  closeMultiplayer();
+  startGame(false);
+}
+function playWorldFromMenu(){
+  const code=cleanWorldCode(document.getElementById('worldCodeInput').value)||activeWorldCode;
+  setActiveWorldCode(code==='SOLO'?randomWorldCode():code);
+  closeMultiplayer();
+  startGame(false);
+}
+async function copyInvite(){
+  const code=cleanWorldCode(document.getElementById('worldCodeInput').value)||activeWorldCode;
+  if(code==='SOLO'){setMultiStatus('MAKE A CODE FIRST');return;}
+  setActiveWorldCode(code);
+  const url=location.href.split('#')[0]+'#world='+encodeURIComponent(activeWorldCode);
+  try{
+    await navigator.clipboard.writeText(url);
+    setMultiStatus('COPIED INVITE');
+  }catch(e){
+    setMultiStatus(activeWorldCode);
+  }
+}
+function startSoloGame(creative=false){
+  setActiveWorldCode('SOLO');
+  startGame(creative);
+}
+function loadWorldInviteFromHash(){
+  const text=(location.hash||'').replace(/^#/,'');
+  const params=new URLSearchParams(text);
+  const code=cleanWorldCode(params.get('world'));
+  if(code){
+    setActiveWorldCode(code);
+    openMultiplayer();
+    setMultiStatus('WORLD '+activeWorldCode+' READY');
+  }
+}
+window.openMultiplayer=openMultiplayer;
+window.closeMultiplayer=closeMultiplayer;
 
 if(!window.THREE){
   window.startGame=function(){
@@ -515,6 +746,7 @@ function trackBlockKey(x,z,k,on){
   else ch.blocks.delete(k);
 }
 function hash2(a,b,s){
+  s=(s+worldSeed)>>>0;
   let n=(Math.imul(a,374761393)^Math.imul(b,668265263)^Math.imul(s,1442695041))>>>0;
   n=(n^(n>>>13))>>>0;
   n=Math.imul(n,1274126177)>>>0;
@@ -642,7 +874,7 @@ function makeOak(x,y,z){
   for(let yy=1;yy<=h;yy++) putAirBlock(x,y+yy,z,'wood');
   for(let yy=y+h-2;yy<=y+h+1;yy++) for(let dx=-2;dx<=2;dx++) for(let dz=-2;dz<=2;dz++){
     if(Math.abs(dx)+Math.abs(dz)+Math.max(0,yy-(y+h))<4){
-      const blockType = (yy===y+h && Math.abs(dx)<=1 && Math.abs(dz)<=1 && Math.random()<0.08) ? 'apple' : 'leaves';
+      const blockType = (yy===y+h && Math.abs(dx)<=1 && Math.abs(dz)<=1 && rnd3(x+dx,yy,z+dz,113)<0.08) ? 'apple' : 'leaves';
       putAirBlock(x+dx,yy,z+dz,blockType);
     }
   }
@@ -1121,6 +1353,11 @@ function updateMoveStatus(){
   el.textContent='MOVE: '+(active||'ready');
 }
 function setGameKey(e,down){
+  if(document.getElementById('multiplayer')?.style.display==='flex'){
+    if(down&&keyName(e)==='Escape') closeMultiplayer();
+    e.preventDefault();
+    return;
+  }
   if(document.getElementById('dressing')?.style.display==='flex'){
     if(down&&keyName(e)==='Escape') closeDressingRoom();
     e.preventDefault();
@@ -1162,7 +1399,7 @@ window.addEventListener('blur',clearKeys);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)clearKeys();});
 document.addEventListener('pointerdown',e=>{
   if(!gameRunning) return;
-  if(e.target.closest('#chat,#dressing,#pause,#dead')) return;
+  if(e.target.closest('#chat,#dressing,#multiplayer,#pause,#dead')) return;
   setTimeout(ensureGameFocus,0);
 });
 
@@ -1288,9 +1525,11 @@ function startGame(creative=false){
   resetInventory(); buildHotbar(); drawHUD();
   gameRunning=true;
   clock.start();
+  updateProfileBadges();
+  const joinLine=`${playerName} joined ${activeWorldCode==='SOLO'?'a solo world':'world '+activeWorldCode}.`;
   addMsg('ai', creative
-    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT and scroll or click the hotbar for every placeable block.\n\nOpen Codex to ask how fast you are going or what the incline is. Ask Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
-    : 'Minecraft Codex Edition survival mode! Craft a table from 4 planks, then right-click it for advanced recipes.\n\nOpen Codex to ask how fast you are going or what the incline is. Watch your health and hunger. Press T or / and ask Codex to build.');
+    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT and scroll or click the hotbar for every placeable block.\n\n'+joinLine+' Open Codex to ask how fast you are going or what the incline is. Ask Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
+    : 'Minecraft Codex Edition survival mode! Craft a table from 4 planks, then right-click it for advanced recipes.\n\n'+joinLine+' Open Codex to ask how fast you are going or what the incline is. Watch your health and hunger. Press T or / and ask Codex to build.');
 }
 window.startGame=startGame;
 function goMenu(){
@@ -1321,6 +1560,7 @@ window.toggleChat=toggleChat;
 function addMsg(cls,text){
   const msgs=document.getElementById('msgs');
   const d=document.createElement('div');d.className='m '+cls;d.textContent=text;
+  if(cls==='me') d.dataset.name=playerName||'You';
   msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;
 }
 
@@ -1559,12 +1799,25 @@ document.getElementById('prompt').addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.preventDefault();toggleChat();}
 });
 buildDressingRoom();
-document.getElementById('playSurvival').addEventListener('click',()=>startGame());
-document.getElementById('playCreative').addEventListener('click',()=>startGame(true));
+updateProfileBadges();
+loadWorldInviteFromHash();
+document.getElementById('playSurvival').addEventListener('click',()=>startSoloGame());
+document.getElementById('playCreative').addEventListener('click',()=>startSoloGame(true));
+document.getElementById('showMultiplayerBtn').addEventListener('click',openMultiplayer);
 document.getElementById('showDressingBtn').addEventListener('click',openDressingRoom);
 document.getElementById('showControlsBtn').addEventListener('click',showControls);
 document.getElementById('saveDressingBtn').addEventListener('click',saveDressingRoom);
 document.getElementById('closeDressingBtn').addEventListener('click',closeDressingRoom);
+document.getElementById('saveUsernameBtn').addEventListener('click',saveUsername);
+document.getElementById('addFriendBtn').addEventListener('click',addFriend);
+document.getElementById('createWorldBtn').addEventListener('click',createWorldCode);
+document.getElementById('copyInviteBtn').addEventListener('click',copyInvite);
+document.getElementById('joinWorldBtn').addEventListener('click',joinWorldFromMenu);
+document.getElementById('playWorldBtn').addEventListener('click',playWorldFromMenu);
+document.getElementById('closeMultiplayerBtn').addEventListener('click',closeMultiplayer);
+document.getElementById('usernameInput').addEventListener('keydown',e=>{if(e.key==='Enter') saveUsername();});
+document.getElementById('friendInput').addEventListener('keydown',e=>{if(e.key==='Enter') addFriend();});
+document.getElementById('worldCodeInput').addEventListener('keydown',e=>{if(e.key==='Enter') joinWorldFromMenu();});
 document.querySelectorAll('#movePad [data-key]').forEach(btn=>{
   const code=btn.dataset.key;
   const set=down=>{
