@@ -26,6 +26,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 #download-title{color:#ffffa0;font:bold 10px 'Courier New';letter-spacing:2px;text-align:center;margin-bottom:6px;text-shadow:2px 2px 0 #000}
 #download-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 #download-row .menu-btn{width:100%;margin:0;padding:9px 0;font-size:10px;box-shadow:none}
+#menu-profile{position:relative;z-index:1;width:280px;margin:-24px 0 14px;padding:7px;background:rgba(0,0,0,0.28);border:3px solid #111;border-top-color:#555;border-left-color:#555;box-shadow:0 0 0 2px #000;display:grid;grid-template-columns:1fr 92px;gap:6px;align-items:center}
+#menuPlayerName{min-width:0;color:#ffffa0;font:bold 11px 'Courier New';letter-spacing:1px;text-shadow:2px 2px 0 #000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#showUsernameBtn{width:100%;margin:0;padding:7px 0;font-size:10px;box-shadow:none}
 #menu-version{position:absolute;bottom:14px;color:rgba(255,255,255,0.25);font-size:11px;z-index:1}
 
 /* Dressing room */
@@ -67,7 +70,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
 #multi-actions{display:flex;gap:8px;margin-top:14px}
 #multi-actions .menu-btn{width:auto;flex:1;margin:0;padding:11px 0;font-size:12px}
 @media (max-width:620px){.multi-grid{grid-template-columns:1fr}#multi-panel{padding:14px}.multi-section.wide{grid-column:auto}}
-@media (max-height:720px){#menu-title{margin-bottom:18px}.menu-btn{padding:10px 0;margin:4px 0}#download-section{margin-top:5px}}
+@media (max-height:720px){#menu-title{margin-bottom:18px}.menu-btn{padding:10px 0;margin:4px 0}#menu-profile{margin:-10px 0 8px}#download-section{margin-top:5px}}
 
 /* ── GAME ──────────────────────────────────────── */
 #game{position:fixed;inset:0;display:none}
@@ -184,6 +187,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
     <h1>⬛ MINECRAFT<br>CODEX EDITION</h1>
     <p>NO SIGN-IN</p>
   </div>
+  <div id="menu-profile">
+    <span id="menuPlayerName">PLAYER</span>
+    <button id="showUsernameBtn" class="menu-btn" type="button">USERNAME</button>
+  </div>
   <button id="playSurvival" class="menu-btn primary" type="button">▶ PLAY SURVIVAL</button>
   <button id="playCreative" class="menu-btn" type="button">⚡ CREATIVE MODE</button>
   <button id="showMultiplayerBtn" class="menu-btn" type="button">☷ MULTIPLAYER</button>
@@ -197,7 +204,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
       <a id="downloadAppBtn" class="menu-btn" href="Minecraft-Codex-Edition-Drag-Install.dmg" download="Minecraft-Codex-Edition-Drag-Install.dmg">APP</a>
     </div>
   </div>
-  <div id="menu-version">Minecraft Codex Edition v1.1.6 · no sign-in</div>
+  <div id="menu-version">Minecraft Codex Edition v1.1.7 · no sign-in</div>
 </div>
 
 <div id="dressing">
@@ -454,8 +461,10 @@ function saveFriends(){
 function updateProfileBadges(){
   const nameEl=document.getElementById('namebadge');
   const worldEl=document.getElementById('worldbadge');
+  const menuNameEl=document.getElementById('menuPlayerName');
   if(nameEl) nameEl.textContent=playerName.toUpperCase();
   if(worldEl) worldEl.textContent=activeWorldCode==='SOLO'?'SOLO':'WORLD '+activeWorldCode;
+  if(menuNameEl) menuNameEl.textContent='USER: '+playerName;
 }
 function setActiveWorldCode(code){
   activeWorldCode=cleanWorldCode(code)||'SOLO';
@@ -493,6 +502,15 @@ function openMultiplayer(){
   drawFriends();
   setMultiStatus('');
   document.getElementById('multiplayer').style.display='flex';
+}
+function openUsernameChooser(){
+  openMultiplayer();
+  setMultiStatus('CHOOSE YOUR USERNAME');
+  setTimeout(()=>{
+    const input=document.getElementById('usernameInput');
+    input.focus();
+    input.select();
+  },50);
 }
 function closeMultiplayer(){
   document.getElementById('multiplayer').style.display='none';
@@ -1354,6 +1372,11 @@ function updateMoveStatus(){
 }
 function setGameKey(e,down){
   if(document.getElementById('multiplayer')?.style.display==='flex'){
+    const typing=/^(INPUT|TEXTAREA)$/.test(e.target?.tagName||'');
+    if(typing){
+      if(down&&keyName(e)==='Escape'){closeMultiplayer();e.preventDefault();e.stopPropagation();}
+      return;
+    }
     if(down&&keyName(e)==='Escape') closeMultiplayer();
     e.preventDefault();
     return;
@@ -1803,6 +1826,7 @@ updateProfileBadges();
 loadWorldInviteFromHash();
 document.getElementById('playSurvival').addEventListener('click',()=>startSoloGame());
 document.getElementById('playCreative').addEventListener('click',()=>startSoloGame(true));
+document.getElementById('showUsernameBtn').addEventListener('click',openUsernameChooser);
 document.getElementById('showMultiplayerBtn').addEventListener('click',openMultiplayer);
 document.getElementById('showDressingBtn').addEventListener('click',openDressingRoom);
 document.getElementById('showControlsBtn').addEventListener('click',showControls);

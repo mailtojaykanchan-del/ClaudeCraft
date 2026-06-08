@@ -1,7 +1,7 @@
 {
   "name": "Minecraft Codex Edition",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "index_url": "https://mailtojaykanchan-del.github.io/ClaudeCraft/index.html",
   "download_url": "https://mailtojaykanchan-del.github.io/ClaudeCraft/Minecraft-Codex-Edition-Drag-Install.dmg",
-  "notes": "Adds usernames, friends, and a shared world-code lobby."
+  "notes": "Adds a main-menu username chooser."
 }
