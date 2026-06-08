@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 
-static NSString *const kBundledVersion = @"1.1.7";
+static NSString *const kBundledVersion = @"1.1.8";
 static NSString *const kUpdateManifestURL = @"https://mailtojaykanchan-del.github.io/ClaudeCraft/version.json";
 
 static NSInteger CompareVersionStrings(NSString *left, NSString *right) {
@@ -60,7 +60,7 @@ static NSInteger CompareVersionStrings(NSString *left, NSString *right) {
 
 - (void)loadBundledGame {
   self.loadingRemoteUpdate = NO;
-  NSURL *indexURL = [[NSBundle mainBundle] URLForResource:@"index" withExtension:@"html"];
+  NSURL *indexURL = [[NSBundle mainBundle] URLForResource:@"game" withExtension:@"html"];
   NSURL *resourcesURL = [[[NSBundle mainBundle] resourceURL] URLByStandardizingPath];
   if (indexURL && resourcesURL) {
     [self.webView loadFileURL:indexURL allowingReadAccessToURL:resourcesURL];

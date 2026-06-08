@@ -1,10 +1,11 @@
 # Minecraft Codex Edition
 
-An offline Minecraft-style voxel game built in one HTML file with Three.js.
+An offline Minecraft-style voxel game packaged as a Mac app with a download-only GitHub Pages site.
 
-## Play
+## Website
 
-Open `index.html` in a browser. Keep `three.min.js` in the same folder.
+Open `index.html` for the public download website.
+The playable game page is `game.html` so the Mac app can still update without turning the website into the game.
 
 ## Mac App
 
@@ -16,9 +17,9 @@ If macOS says the app is damaged or incomplete, double-click `installers/Open Mi
 
 ## Updates
 
-The app opens its bundled game first, then checks `version.json` on GitHub Pages.
+The app opens its bundled `game.html` first, then checks `version.json` on GitHub Pages.
 If `version.json` has a newer version, the app loads the newer game page inside the same app window.
-When publishing a new update, upload `index.html`, `version.json`, and any changed download files to GitHub Pages.
+When publishing a new update, upload `index.html`, `game.html`, `version.json`, and any changed download files to GitHub Pages.
 
 ## Controls
 

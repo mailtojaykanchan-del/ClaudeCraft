@@ -8,9 +8,17 @@
 		<data>
 		LtxbCoxhBok94UVZsy+eUYyh1GA=
 		</data>
+		<key>Resources/download.html</key>
+		<data>
+		x87c60/k2SNpBW51A3VuHGTPeZU=
+		</data>
+		<key>Resources/game.html</key>
+		<data>
+		j/OtimZ9bkfvutgLQIJDPupcCwU=
+		</data>
 		<key>Resources/index.html</key>
 		<data>
-		8dfPUM5+v9zlOLonydM6nVJIO7I=
+		x87c60/k2SNpBW51A3VuHGTPeZU=
 		</data>
 		<key>Resources/three.min.js</key>
 		<data>
@@ -26,11 +34,25 @@
 			EjEVLIwTh9OGS+azN9ivSsg4HThz0ApzUhTxnjkRQ68=
 			</data>
 		</dict>
+		<key>Resources/download.html</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			yB3S6bOTwNXJUGeACKCLUMDqVpm9C/a1bwbcXHUJfEM=
+			</data>
+		</dict>
+		<key>Resources/game.html</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			qU08Hj7XPsgxu4CP2lnI1VIcF3vKYwsT4ZFj+qjr4Go=
+			</data>
+		</dict>
 		<key>Resources/index.html</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			HzAna73AXufXAuHDt9DxkoUasvFQpI7bV1HaXMBvTjs=
+			yB3S6bOTwNXJUGeACKCLUMDqVpm9C/a1bwbcXHUJfEM=
 			</data>
 		</dict>
 		<key>Resources/three.min.js</key>
