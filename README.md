@@ -41,6 +41,7 @@ When publishing a new update, upload `index.html`, `game.html`, `version.json`, 
 - Creative mode includes every placeable block
 - Main-menu username chooser
 - Username, friends list, and shared world-code lobby
+- Starter food, food patches, marked caves, and natural villages
 - Codex chat answers for speed and incline
 - Local no-sign-in Codex builder commands
 - Trees, caves, ores, rivers, and biomes

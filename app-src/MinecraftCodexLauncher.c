@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 
-static NSString *const kBundledVersion = @"1.1.9";
+static NSString *const kBundledVersion = @"1.2.0";
 static NSString *const kUpdateManifestURL = @"https://mailtojaykanchan-del.github.io/ClaudeCraft/version.json";
 
 static NSInteger CompareVersionStrings(NSString *left, NSString *right) {

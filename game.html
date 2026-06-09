@@ -204,7 +204,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Co
       <a id="downloadAppBtn" class="menu-btn" href="Minecraft-Codex-Edition-Drag-Install.dmg" download="Minecraft-Codex-Edition-Drag-Install.dmg">APP</a>
     </div>
   </div>
-  <div id="menu-version">Minecraft Codex Edition v1.1.9 · no sign-in</div>
+  <div id="menu-version">Minecraft Codex Edition v1.2.0 · no sign-in</div>
 </div>
 
 <div id="dressing">
@@ -909,6 +909,110 @@ function makeCactus(x,y,z){
   const h=2+Math.floor(rnd3(x,y,z,112)*3);
   for(let yy=1;yy<=h;yy++) putAirBlock(x,y+yy,z,'cactus');
 }
+function terrainTopBlockY(x,z){
+  x=Math.round(x);z=Math.round(z);
+  for(let y=WORLD_TOP;y>=BEDROCK_Y;y--){
+    const t=world.get(bk(x,y,z));
+    if(t&&t!=='water'&&t!=='leaves'&&t!=='glass'&&t!=='lava'&&t!=='air') return y;
+  }
+  return getH(x,z);
+}
+function clearAbove(x,z,y,h=7){
+  for(let yy=y+1;yy<=y+h;yy++){
+    const t=blockAt(x,yy,z);
+    if(t&&t!=='bedrock') removeBlock(x,yy,z);
+  }
+}
+function placeFoodAt(x,z,type){
+  const y=terrainTopBlockY(x,z);
+  const surf=blockAt(x,y,z);
+  if(!['grass','snow','dirt','sand'].includes(surf)) return false;
+  clearAbove(x,z,y,2);
+  placeBlock(x,y+1,z,type);
+  return true;
+}
+function addFoodPatch(cx,cz,forceX=null,forceZ=null){
+  const bx=cx*CHUNK_SIZE,bz=cz*CHUNK_SIZE;
+  if(forceX===null&&rnd3(cx,0,cz,210)>.32) return false;
+  const centerX=forceX===null?bx+4+Math.floor(rnd3(cx,1,cz,211)*8):Math.round(forceX);
+  const centerZ=forceZ===null?bz+4+Math.floor(rnd3(cx,2,cz,212)*8):Math.round(forceZ);
+  let made=0;
+  for(let dx=-3;dx<=3;dx++) for(let dz=-3;dz<=3;dz++){
+    const dist=Math.abs(dx)+Math.abs(dz);
+    if(dist>4) continue;
+    const r=rnd3(centerX+dx,0,centerZ+dz,213);
+    if(r>.34) continue;
+    const type=(r<.14||dist<2)?'apple':'bread';
+    if(placeFoodAt(centerX+dx,centerZ+dz,type)) made++;
+  }
+  return made>0;
+}
+function boxBlocks(x1,y1,z1,x2,y2,z2,type){
+  const xa=Math.min(x1,x2),xb=Math.max(x1,x2);
+  const ya=Math.min(y1,y2),yb=Math.max(y1,y2);
+  const za=Math.min(z1,z2),zb=Math.max(z1,z2);
+  for(let x=xa;x<=xb;x++) for(let y=ya;y<=yb;y++) for(let z=za;z<=zb;z++) placeBlock(x,y,z,type);
+}
+function hollowVillageHouse(x,y,z,wall='wood'){
+  boxBlocks(x,y,z,x+4,y,z+4,'plank');
+  boxBlocks(x,y+1,z,x+4,y+3,z,wall);
+  boxBlocks(x,y+1,z+4,x+4,y+3,z+4,wall);
+  boxBlocks(x,y+1,z,x,y+3,z+4,wall);
+  boxBlocks(x+4,y+1,z,x+4,y+3,z+4,wall);
+  boxBlocks(x-1,y+4,z-1,x+5,y+4,z+5,'plank');
+  removeBlock(x+2,y+1,z); removeBlock(x+2,y+2,z);
+  placeBlock(x+1,y+2,z,'glass');
+  placeBlock(x+3,y+2,z+4,'glass');
+}
+function flattenVillageGround(x,z,w,d){
+  let y=BEDROCK_Y;
+  for(let ix=x;ix<x+w;ix++) for(let iz=z;iz<z+d;iz++) y=Math.max(y,terrainTopBlockY(ix,iz));
+  y=Math.min(y,WORLD_TOP-8);
+  for(let ix=x;ix<x+w;ix++) for(let iz=z;iz<z+d;iz++){
+    placeBlock(ix,y,iz,'grass');
+    for(let yy=y-1;yy>=Math.max(BEDROCK_Y+1,y-4);yy--) if(!blockAt(ix,yy,iz)) placeBlock(ix,yy,iz,'dirt');
+    clearAbove(ix,iz,y,8);
+  }
+  return y;
+}
+function addVillageAt(x,z,forced=false){
+  x=Math.round(x);z=Math.round(z);
+  if(!forced&&rnd3(x,0,z,260)>.055) return false;
+  const y=flattenVillageGround(x,z,14,14);
+  hollowVillageHouse(x+1,y+1,z+1,'wood');
+  hollowVillageHouse(x+8,y+1,z+7,'cobble');
+  boxBlocks(x+6,y+1,z+1,x+7,y+1,z+12,'gravel');
+  boxBlocks(x+1,y+1,z+6,x+12,y+1,z+7,'gravel');
+  boxBlocks(x+1,y+1,z+11,x+5,y+1,z+12,'dirt');
+  boxBlocks(x+3,y+1,z+11,x+3,y+1,z+12,'water');
+  for(let ix=x+1;ix<=x+5;ix++) for(let iz=z+11;iz<=z+12;iz++) if(blockAt(ix,y+1,iz)!=='water') placeBlock(ix,y+2,iz,'bread');
+  placeBlock(x+7,y+2,z+6,'glowstone');
+  addFoodPatch(chunkCoord(x),chunkCoord(z),x+10,z+3);
+  return true;
+}
+function addChunkVillage(cx,cz){
+  if(cx===0&&cz===0) return false;
+  const bx=cx*CHUNK_SIZE,bz=cz*CHUNK_SIZE;
+  const h=getH(bx+7,bz+7), surf=surfaceFor(bx+7,bz+7,h);
+  if(!['grass','snow','sand'].includes(surf)||h<1||h>15) return false;
+  return addVillageAt(bx+1,bz+1,false);
+}
+function addMarkedCaveAt(x,z){
+  x=Math.round(x);z=Math.round(z);
+  const y=terrainTopBlockY(x,z);
+  if(y<=SEA+1||y>WORLD_TOP-8) return false;
+  const angle=rnd3(x,0,z,280)*Math.PI*2;
+  const dx=Math.round(Math.cos(angle))||1;
+  const dz=Math.round(Math.sin(angle));
+  for(let t=0;t<18;t++){
+    const tx=x+Math.round(dx*t*.65),tz=z+Math.round(dz*t*.65),ty=y-1-Math.floor(t*.42);
+    carveCaveBubble(tx,ty,tz,t<3?2.8:2.3,t<3?2:1.6,t<3?2.8:2.3);
+  }
+  for(let ox=-2;ox<=2;ox++) for(let oz=-2;oz<=2;oz++) if(Math.abs(ox)+Math.abs(oz)<=3) placeBlock(x+ox,y,z+oz,'gravel');
+  placeBlock(x,y+1,z,'glowstone');
+  placeBlock(x+1,y+1,z,'gravel');
+  return true;
+}
 function addChunkFeatures(cx,cz){
   const bx=cx*CHUNK_SIZE,bz=cz*CHUNK_SIZE;
   for(let lx=3;lx<CHUNK_SIZE-3;lx++) for(let lz=3;lz<CHUNK_SIZE-3;lz++){
@@ -919,6 +1023,8 @@ function addChunkFeatures(cx,cz){
     }
     if(surf==='sand'&&bio==='desert'&&h>SEA+1&&r>.985) makeCactus(x,h,z);
   }
+  addFoodPatch(cx,cz);
+  addChunkVillage(cx,cz);
 }
 function generateChunk(cx,cz){
   const bx=cx*CHUNK_SIZE,bz=cz*CHUNK_SIZE;
@@ -984,6 +1090,16 @@ function findSpawnNear(x0,z0){
   const h=getH(x0,z0);
   return new THREE.Vector3(x0,h+1.36,z0);
 }
+function addSpawnLandmarks(){
+  const sx=Math.round(spawnPos.x),sz=Math.round(spawnPos.z);
+  ensureChunksForBox(sx-24,sz-20,sx+24,sz+24);
+  bulkWorldEdit=true;
+  addFoodPatch(chunkCoord(sx),chunkCoord(sz),sx+4,sz+3);
+  addMarkedCaveAt(sx+11,sz+4);
+  addVillageAt(sx-18,sz+8,true);
+  bulkWorldEdit=false;
+  rebuildVisibleWorld();
+}
 function generateWorld(){
   clearAll();
   loadedChunks.clear();
@@ -991,6 +1107,7 @@ function generateWorld(){
   spawnPos=findSpawnNear(0,0);
   activeChunkKey=chunkKey(chunkCoord(spawnPos.x),chunkCoord(spawnPos.z));
   syncChunksAround(chunkCoord(spawnPos.x),chunkCoord(spawnPos.z),true);
+  addSpawnLandmarks();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1147,6 +1264,11 @@ function setHotbarForMode(){
 function resetInventory(){
   inventory={};
   HOTBAR.forEach(type=>inventory[type]=0);
+}
+function grantStarterFood(){
+  if(player.creative) return;
+  inventory.apple=4;
+  inventory.bread=2;
 }
 function updateHotbarCounts(){
   document.querySelectorAll('.hs').forEach((slot,i)=>{
@@ -1545,14 +1667,14 @@ function startGame(creative=false){
   document.getElementById('chat').classList.remove('open');
   document.getElementById('craft').classList.remove('open');
   document.getElementById('msgs').innerHTML='';
-  resetInventory(); buildHotbar(); drawHUD();
+  resetInventory(); grantStarterFood(); buildHotbar(); drawHUD();
   gameRunning=true;
   clock.start();
   updateProfileBadges();
   const joinLine=`${playerName} joined ${activeWorldCode==='SOLO'?'a solo world':'world '+activeWorldCode}.`;
   addMsg('ai', creative
-    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT and scroll or click the hotbar for every placeable block.\n\n'+joinLine+' Open Codex to ask how fast you are going or what the incline is. Ask Codex for a castle, house, tower, bridge, tree, farm, pyramid, or fountain.'
-    : 'Minecraft Codex Edition survival mode! Craft a table from 4 planks, then right-click it for advanced recipes.\n\n'+joinLine+' Open Codex to ask how fast you are going or what the incline is. Watch your health and hunger. Press T or / and ask Codex to build.');
+    ? 'Minecraft Codex Edition creative mode! Fly with SPACE/SHIFT and scroll or click the hotbar for every placeable block.\n\n'+joinLine+' Villages, caves, and food patches now generate in the world.'
+    : 'Minecraft Codex Edition survival mode! You start with apples and bread. Look near spawn for a village, farm food, and a marked cave entrance.\n\n'+joinLine+' Watch your health and hunger. Press T or / and ask Codex to build.');
 }
 window.startGame=startGame;
 function goMenu(){

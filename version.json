@@ -1,7 +1,7 @@
 {
   "name": "Minecraft Codex Edition",
-  "version": "1.1.9",
+  "version": "1.2.0",
   "index_url": "https://mailtojaykanchan-del.github.io/ClaudeCraft/game.html",
   "download_url": "https://mailtojaykanchan-del.github.io/ClaudeCraft/Minecraft-Codex-Edition-Drag-Install.dmg",
-  "notes": "Fixes blank app launch by bundling the game with a fallback loader."
+  "notes": "Adds starter food, natural food patches, marked caves, and villages near spawn."
 }
